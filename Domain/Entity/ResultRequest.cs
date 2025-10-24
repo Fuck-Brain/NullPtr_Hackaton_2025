@@ -3,12 +3,14 @@
     public class ResultRequest
     {
         public Guid Id { get; set; }
-        public Request Request { get; set; }
-        public User UserRequest { get; set; }
-        public IEnumerable<User> ResultRequestUsers { get; set; }
-        public ResultRequest(Guid id, Request request, User userRequest, IEnumerable<User> resultRequestUsers)
+        public Request Request { get; set; } = null;
+        public User UserRequest { get; set; } = null;
+        public IEnumerable<User> ResultRequestUsers { get; set; } = Enumerable.Empty<User>();
+
+        public ResultRequest () { }
+        public ResultRequest(Request request, User userRequest, IEnumerable<User> resultRequestUsers)
         {
-            Id = id;
+            Id = Guid.NewGuid();
             Request = request;
             UserRequest = userRequest;
             ResultRequestUsers = resultRequestUsers;

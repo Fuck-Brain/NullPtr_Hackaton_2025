@@ -8,10 +8,11 @@
         public string TextRequest { get; set; }
         public string Label {  get; set; } = string.Empty;
         public bool IsSended { get; set; } = false;
+        public Request() { }
 
         public Request(Guid IdUser, string  nameRequest, string textRequest)
         {
-            Id = new Guid();
+            Id = Guid.NewGuid();
             this.IdUser = IdUser;
             NameRequest = nameRequest;
             TextRequest = textRequest;

@@ -2,7 +2,7 @@
 {
     public class User
     {
-        Guid Id { get; set; }
+        public Guid Id { get; set; }
         public string Login {  get; set; }
         public string HashPassword { get; set; }
         public string Name { get; set; }
@@ -15,9 +15,11 @@
         public string City { get; set; }
         public string Contact { get; set; }
 
+        public User() { }
+
         public User(string login, string hashPassword, string name, string surName, string fatherName, int age, string gender, string city, string contact)
         {
-            Id = new Guid();
+            Id = Guid.NewGuid();
             Login = login;
             HashPassword = hashPassword;
             Name = name;
