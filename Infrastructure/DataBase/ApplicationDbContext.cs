@@ -9,6 +9,10 @@ namespace Back.Infrastructure.DataBase
         public DbSet<Request> Requests => Set<Request>();
         public DbSet<ResultRequest> ResultRequests => Set<ResultRequest>();
         public DbSet<UserLike> UserLikes => Set<UserLike>();
+        public DbSet<UserGoal> UserGoals => Set<UserGoal>();
+        public DbSet<UserHobby> UserHobbies => Set<UserHobby>();
+        public DbSet<UserInterest> UserInterests => Set<UserInterest>();
+        public DbSet<UserSkill> UserSkills => Set<UserSkill>();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -17,9 +21,32 @@ namespace Back.Infrastructure.DataBase
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Подключаем все конфигурации из сборки Infrastructure
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Skills)
+                .WithOne(s => s.User)
+                .HasForeignKey(s => s.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Interests)
+                .WithOne(i => i.User)
+                .HasForeignKey(i => i.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Goals)
+                .WithOne(g => g.User)
+                .HasForeignKey(g => g.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Hobbies)
+                .WithOne(h => h.User)
+                .HasForeignKey(h => h.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             base.OnModelCreating(modelBuilder);
         }
+
     }
 }

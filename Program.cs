@@ -23,6 +23,10 @@ builder.Services.AddScoped<IUserRepository, UserRepositorySqlLite>();
 builder.Services.AddScoped<IRequestRepository, RequestRepositorySqlLite>();
 builder.Services.AddScoped<IResultRequestRepository, ResultRequestRepositorySqlLite>();
 builder.Services.AddScoped<IUserLikeRepository, UserLikeRepositorySqlLite>();
+builder.Services.AddScoped<IUserGoalRepository, UserGoalRepositorySqlLite>();
+builder.Services.AddScoped<IUserHobbyRepository, UserHobbyRepositorySqlLite>();
+builder.Services.AddScoped<IUserInterestRepository, UserInterestRepositorySqlLite>();
+builder.Services.AddScoped<IUserSkillRepository, UserSkillRepositorySqlLite>();
 
 var app = builder.Build();
 app.UseSwagger();
