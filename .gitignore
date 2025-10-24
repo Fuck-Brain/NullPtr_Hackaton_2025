@@ -4,7 +4,9 @@ Debug/
 Release/
 out/
 publish/
-
+*.db
+*.db-wal
+*.db-shm
 # Rider / VSCode / VS cache
 .vs/
 # =========================
