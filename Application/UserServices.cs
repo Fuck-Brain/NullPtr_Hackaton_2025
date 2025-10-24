@@ -36,12 +36,12 @@ public class UserServices
         return token;
     }
 
-    public async Task<string> Register(string login, string password, string name, string surName, string fatherName, int age, string gender, string city, string contact)
+    public async Task<string> Register(string login, string password, string photoHash, string name, string surName, string fatherName, int age, string gender, string city, string contact)
     {
         if ((await _userRepository.GetAllUser()).Any(u => u.Login == login))
             throw new AuthException();
         
-        var user = new User(login, password, name, surName, fatherName, age, gender, city, contact);
+        var user = new User(login, password, photoHash, name, surName, fatherName, age, gender, city, contact);
         
         // TODO: gen token
         string token = "token";
