@@ -75,6 +75,6 @@ public class UserServices
         if (info.Skills is not null) { user.Skills = info.Skills; }
         if (info.Description is not null) { user.DescribeUser = info.Description; }
         
-        _userRepository.UpdateUser(user);
+        await _userRepository.UpdateUser(user);
     }
 }

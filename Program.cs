@@ -1,3 +1,4 @@
+using Back.Application;
 using Back.Infrastructure.DataBase;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,11 @@ using Back.Infrastructure.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpClient<AnalyticsClient>(c =>
+{
+    c.BaseAddress = new Uri("http://localhost:8000/");
+    c.Timeout = TimeSpan.FromSeconds(10);
+});
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
