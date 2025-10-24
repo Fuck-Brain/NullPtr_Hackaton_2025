@@ -8,6 +8,7 @@ namespace Back.Infrastructure.DataBase
         public DbSet<User> Users => Set<User>();
         public DbSet<Request> Requests => Set<Request>();
         public DbSet<ResultRequest> ResultRequests => Set<ResultRequest>();
+        public DbSet<UserLike> UserLikes => Set<UserLike>();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
