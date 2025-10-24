@@ -1,17 +1,19 @@
 using Back.Domain.Entity;
+using Back.Domain.Interfaces;
 
 namespace Back.Application;
 
 public class UserServices
 {
-    public UserServices()
+    private readonly IUserRepository _userRepository;
+    public UserServices(IUserRepository userRepository)
     {
-        
+        _userRepository = userRepository;
     }
 
     public string Login(string login, string password, string name, string surName, string fatherName, int age, string gender, string city, string contact)
     {
-        // TODO: check if user exists
+        _userRepository.GetAllUser();
         var user = new User(login, password, name, surName, fatherName, age, gender, city, contact);
         // TODO: add to repo
 
