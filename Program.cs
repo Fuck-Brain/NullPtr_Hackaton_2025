@@ -5,6 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
 using Back.Domain.Interfaces;
 using Back.Infrastructure.Repository;
+using Back.Domain.Entity;
+using Back.API.DTO;
+using Back.API.Mapping;
+using UserMapper = Back.API.Mapping.UserMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,11 +31,20 @@ builder.Services.AddScoped<IUserHobbyRepository, UserHobbyRepositorySqlLite>();
 builder.Services.AddScoped<IUserInterestRepository, UserInterestRepositorySqlLite>();
 builder.Services.AddScoped<IUserSkillRepository, UserSkillRepositorySqlLite>();
 
+/// Aplication Services
+builder.Services.AddScoped<AnalyticsClient>();
+builder.Services.AddScoped<RequestServices>();
+builder.Services.AddScoped<UserServices>();
+
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
 
 app.MapGet("/", () => "Hello World!");
+UserMapper.MapPostRegister(ref app);
+UserMapper.MapGetLogin(ref app);
+UserMapper.MapPutUpdate(ref app);
+UserMapper.MapDelete(ref app);
 
 app.Run();
