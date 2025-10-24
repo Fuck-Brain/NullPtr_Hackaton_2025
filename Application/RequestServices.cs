@@ -13,7 +13,15 @@ public class RequestServices
     {
         // TODO: check if user exists
         var request = new Request(userId,  name, text);
+        // 
         // TODO: add req to repo
         return request.Id;
+    }
+
+    public List<Request> GetUserRequests(Guid userId)
+    {
+        // TODO: get user requests
+
+        return new List<Request>();
     }
 }
