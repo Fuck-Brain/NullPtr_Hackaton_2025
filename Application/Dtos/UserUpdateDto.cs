@@ -11,6 +11,8 @@ public class UserUpdateDto
     public string? Gender { get; set; } = null;
     public string? City { get; set; } = null;
     public string? Contact { get; set; } = null;
-    public string? Skills { get; set; } = null;
+    public List<string>? Skills { get; set; } = null;
+    public List<string>? Interests { get; set; } = null;
+    public List<string>? Hobbies { get; set; } = null;
     public string? Description { get; set; } = null;
 }
