@@ -35,12 +35,20 @@ namespace Back.Infrastructure.Repository
         public async Task<IEnumerable<User>> GetAllUser()
         {
             return await _context.Users
+                .Include(u => u.Interests)
+                .Include(u => u.Skills)
+                .Include(u => u.Requests)
+                .Include(u => u.Hobbies)
                 .ToListAsync();
         }
 
         public async Task<User?> GetUser(Guid id)
         {
             return await _context.Users
+                .Include(u => u.Interests)
+                .Include(u => u.Skills)
+                .Include(u => u.Requests)
+                .Include(u => u.Hobbies)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 

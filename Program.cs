@@ -1,14 +1,15 @@
 using Back.Application;
+using Back.Domain.Interfaces;
+using Back.Infrastructure;
 using Back.Infrastructure.DataBase;
-using Microsoft.OpenApi.Models;
+using Back.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
-using Back.Domain.Interfaces;
-using Back.Infrastructure.Repository;
 using Back.Domain.Entity;
 using Back.API.DTO;
 using Back.API.Mapping;
 using UserMapper = Back.API.Mapping.UserMapper;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddScoped<IUserLikeRepository, UserLikeRepositorySqlLite>();
 builder.Services.AddScoped<IUserHobbyRepository, UserHobbyRepositorySqlLite>();
 builder.Services.AddScoped<IUserInterestRepository, UserInterestRepositorySqlLite>();
 builder.Services.AddScoped<IUserSkillRepository, UserSkillRepositorySqlLite>();
+builder.Services.AddScoped<UnitOfWork>();
 
 /// Aplication Services
 builder.Services.AddScoped<AnalyticsClient>();
@@ -37,6 +39,13 @@ builder.Services.AddScoped<RequestServices>();
 builder.Services.AddScoped<UserServices>();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    bool seedEnabled = true; // включить для заполнения тестовыми данными
+    await DbInitializer.EnsureCreatedAndSeedAsync(db, seedEnabled);
+}
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();

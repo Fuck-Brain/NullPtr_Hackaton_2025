@@ -26,10 +26,11 @@ public class RequestServices
             throw new AuthException();
         
         var request = new Request(userId,  name, text);
-        _requestRepository.AddRequest(request);
+        user.Requests.Add(request);
+        await _userRepository.UpdateUser(user);
         var response = await _analyticsClient.ClassifyAsync(new ClassificationRequest(request, (await _userRepository.GetAllUser()).ToList()));
         var requestResult = new ResultRequest(request, user, response.ClassifiedUsers);
-        // TODO: save
+        await _resultRepository.AddResultRequest(requestResult);
         return request.Id;
     }
 

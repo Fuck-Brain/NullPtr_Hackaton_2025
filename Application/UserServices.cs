@@ -72,7 +72,26 @@ public class UserServices
         if (info.Gender is not null) { user.Gender = info.Gender; }
         if (info.City is not null) { user.City = info.City; }
         if (info.Contact is not null) { user.Contact = info.Contact; }
-        if (info.Skills is not null) { user.Skills = info.Skills; }
+        if (info.Skills is not null)
+        {
+            user.Skills.Clear();
+            foreach (var skill in info.Skills)
+                user.AddSkill(skill);
+        }
+        if (info.Interests is not null)
+        {
+            user.Interests.Clear();
+            foreach (var interests in info.Interests)
+            {
+                user.AddInterest(interests);
+            }
+        }
+        if (info.Hobbies is not null)
+        {
+            user.Hobbies.Clear();
+            foreach (var hobby in info.Hobbies)
+                user.AddHobby(hobby);
+        }
         if (info.Description is not null) { user.DescribeUser = info.Description; }
         
         await _userRepository.UpdateUser(user);
