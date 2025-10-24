@@ -4,10 +4,10 @@ namespace Back.Domain.Interfaces
 {
     public interface IRequestRepository
     {
-        public Guid AddRequest(Request request);
-        public Request GetRequest(Guid id);
-        public IEnumerable<Request> GetAllRequests();
-        public void UpdateRequest(Request request);
-        public void DeleteRequest(Guid id);
+        public Task<Guid> AddRequest(Request request);
+        public Task<Request> GetRequest(Guid id);
+        public Task<IEnumerable<Request>> GetAllRequests();
+        public Task UpdateRequest(Request request);
+        public Task DeleteRequest(Guid id);
     }
 }

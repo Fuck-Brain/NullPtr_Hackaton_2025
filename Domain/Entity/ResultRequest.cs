@@ -5,15 +5,15 @@
         public Guid Id { get; private set; }
 
         // ---- Связь "один к одному" или "один ко многим" с Request ----
-        public Guid RequestId { get; private set; }
-        public Request Request { get; private set; }
+        public Guid RequestId { get;  set; }
+        public Request Request { get;  set; }
 
         // ---- Связь с пользователем, создавшим запрос ----
-        public Guid UserRequestId { get; private set; }
-        public User UserRequest { get; private set; }
+        public Guid UserRequestId { get;  set; }
+        public User UserRequest { get;  set; }
 
         // ---- Много пользователей в результате ----
-        public ICollection<User> ResultRequestUsers { get; private set; } = new List<User>();
+        public ICollection<User> ResultRequestUsers { get;  set; } = new List<User>();
 
         private ResultRequest() { } // Для EF
 
