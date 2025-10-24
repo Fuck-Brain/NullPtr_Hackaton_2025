@@ -19,6 +19,7 @@
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="9.0.10" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.6" />
   </ItemGroup>
 
 </Project>
