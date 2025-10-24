@@ -33,7 +33,7 @@ namespace Back.Infrastructure.DataBase
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
-                .HasMany(u => u.Goals)
+                .HasMany(u => u.Requests)
                 .WithOne(g => g.User)
                 .HasForeignKey(g => g.UserId)
                 .OnDelete(DeleteBehavior.Cascade);

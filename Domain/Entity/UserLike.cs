@@ -2,13 +2,13 @@
 {
     public class UserLike
     {
-        public Guid Id { get; private set; }
-        public Guid FromUserId { get; private set; }
-        public Guid ToUserId { get; private set; }
-        public bool IsLike { get; private set; }
+        public Guid Id { get;  set; }
+        public Guid FromUserId { get;  set; }
+        public Guid ToUserId { get;  set; }
+        public bool IsLike { get;  set; }
 
-        public User FromUser { get; private set; }
-        public User ToUser { get; private set; }
+        public User FromUser { get;  set; }
+        public User ToUser { get;  set; }
 
         private UserLike() { }
 

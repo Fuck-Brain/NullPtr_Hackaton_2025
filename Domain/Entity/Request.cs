@@ -2,14 +2,14 @@
 {
     public class Request
     {
-        public Guid Id { get; private set; }
-        public Guid UserId { get; private set; }
-        public User User { get; private set; }
+        public Guid Id { get;  set; }
+        public Guid UserId { get;  set; }
+        public User User { get;  set; }
 
-        public string NameRequest { get; private set; } = string.Empty;
-        public string TextRequest { get; private set; } = string.Empty;
-        public string Label { get; private set; } = string.Empty;
-        public bool IsSended { get; private set; }
+        public string NameRequest { get;  set; } = string.Empty;
+        public string TextRequest { get;  set; } = string.Empty;
+        public string Label { get;  set; } = string.Empty;
+        public bool IsSended { get;  set; }
 
         private Request() { } // для EF
 

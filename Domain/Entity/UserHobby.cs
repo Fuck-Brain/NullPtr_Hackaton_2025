@@ -2,11 +2,11 @@
 {
     public class UserHobby
     {
-        public Guid Id { get; private set; }
-        public Guid UserId { get; private set; }
-        public string HobbyName { get; private set; }
+        public Guid Id { get;  set; }
+        public Guid UserId { get;  set; }
+        public string HobbyName { get;  set; }
 
-        public User User { get; private set; }
+        public User User { get;  set; }
 
         private UserHobby() { }
 
