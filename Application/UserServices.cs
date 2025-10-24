@@ -68,7 +68,7 @@ public class UserServices
         if (info.Name is not null) { user.Name = info.Name; }
         if (info.Surname is not null) { user.SurName = info.Surname; }
         if (info.FatherName is not null) { user.FatherName = info.FatherName; }
-        if (info.Age is not null) { user.Age = info.Age; }
+        if (info.Age is not null) { user.Age = (int)info.Age; }
         if (info.Gender is not null) { user.Gender = info.Gender; }
         if (info.City is not null) { user.City = info.City; }
         if (info.Contact is not null) { user.Contact = info.Contact; }
