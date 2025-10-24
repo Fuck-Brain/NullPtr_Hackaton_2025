@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Domain\Entity\" />
-    <Folder Include="Domain\Interfaces\" />
     <Folder Include="API\" />
   </ItemGroup>
 
