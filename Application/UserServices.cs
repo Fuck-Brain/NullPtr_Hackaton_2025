@@ -14,9 +14,9 @@ public class UserServices
         _userRepository = userRepository;
     }
 
-    public string Login(string login, string password)
+    public async Task<string> Login(string login, string password)
     {
-        var user = _userRepository.GetAllUser().FirstOrDefault(u => u.Login == login);
+        var user = (await _userRepository.GetAllUser()).FirstOrDefault(u => u.Login == login);
         if (user == null)
             throw new AuthException();
         string passwordHash;
@@ -36,9 +36,9 @@ public class UserServices
         return token;
     }
 
-    public string Register(string login, string password, string name, string surName, string fatherName, int age, string gender, string city, string contact)
+    public async Task<string> Register(string login, string password, string name, string surName, string fatherName, int age, string gender, string city, string contact)
     {
-        if (_userRepository.GetAllUser().Any(u => u.Login == login))
+        if ((await _userRepository.GetAllUser()).Any(u => u.Login == login))
             throw new AuthException();
         
         var user = new User(login, password, name, surName, fatherName, age, gender, city, contact);
@@ -48,9 +48,9 @@ public class UserServices
         return token;
     }
 
-    public void Update(Guid id, UserUpdateDto info)
+    public async Task Update(Guid id, UserUpdateDto info)
     {
-        var user = _userRepository.GetUser(id);
+        var user = await _userRepository.GetUser(id);
         
         if (info.Login is not null) { user.Login = info.Login; }
 
