@@ -78,7 +78,6 @@ public class UserServices
             foreach (var skill in info.Skills)
                 user.AddSkill(skill);
         }
-
         if (info.Interests is not null)
         {
             user.Interests.Clear();
@@ -87,7 +86,6 @@ public class UserServices
                 user.AddInterest(interests);
             }
         }
-
         if (info.Hobbies is not null)
         {
             user.Hobbies.Clear();

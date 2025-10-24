@@ -1,20 +1,23 @@
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
+using Back.Infrastructure;
 
 namespace Back.Application;
 
 public class ResultRequestServices
 {
-    private readonly IResultRequestRepository _resultRequestRepository;
+    private readonly UnitOfWork unit;
     
-    public ResultRequestServices(IResultRequestRepository resultRequestRepository)
+    public ResultRequestServices(UnitOfWork unit)
     {
-        _resultRequestRepository = resultRequestRepository;
+        this.unit = unit;
     }
 
-    public async Task<User> GetUserResultRequestRecommendations(int userId)
+    public async Task<List<User>> GetUserResultRequestRecommendations(Guid userId)
     {
-        throw new NotImplementedException();
-        //_resultRequestRepository.
+        return (await unit.Result.GetAllResultRequests()).Where(r => r.UserRequestId == userId)
+            .SelectMany(r => r.ResultRequestUsers ?? Enumerable.Empty<User>()) 
+            .DistinctBy(u => u.Id)                                 
+            .ToList();
     }
 }
