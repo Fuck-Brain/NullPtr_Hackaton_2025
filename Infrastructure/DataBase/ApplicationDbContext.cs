@@ -9,7 +9,6 @@ namespace Back.Infrastructure.DataBase
         public DbSet<Request> Requests => Set<Request>();
         public DbSet<ResultRequest> ResultRequests => Set<ResultRequest>();
         public DbSet<UserLike> UserLikes => Set<UserLike>();
-        public DbSet<UserGoal> UserGoals => Set<UserGoal>();
         public DbSet<UserHobby> UserHobbies => Set<UserHobby>();
         public DbSet<UserInterest> UserInterests => Set<UserInterest>();
         public DbSet<UserSkill> UserSkills => Set<UserSkill>();

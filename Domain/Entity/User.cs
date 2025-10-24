@@ -2,24 +2,24 @@
 {
     public class User
     {
-        public Guid Id { get; private set; }
-        public string Login { get; private set; }
-        public string HashPassword { get; private set; }
-        public string PhotoHash { get; private set; }
-        public string Name { get; private set; }
-        public string SurName { get; private set; }
-        public string FatherName { get; private set; }
-        public int Age { get; private set; }
-        public string Gender { get; private set; }
-        public string DescribeUser { get; private set; } = string.Empty;
-        public string City { get; private set; }
-        public string Contact { get; private set; }
+        public Guid Id { get;  set; }
+        public string Login { get;  set; }
+        public string HashPassword { get;  set; }
+        public string PhotoHash { get;  set; }
+        public string Name { get;  set; }
+        public string SurName { get;  set; }
+        public string FatherName { get;  set; }
+        public int Age { get;  set; }
+        public string Gender { get;  set; }
+        public string DescribeUser { get;  set; } = string.Empty;
+        public string City { get;  set; }
+        public string Contact { get;  set; }
 
         // связи (коллекции)
-        public ICollection<UserSkill> Skills { get; private set; } = new List<UserSkill>();
-        public ICollection<UserInterest> Interests { get; private set; } = new List<UserInterest>();
-        public ICollection<UserGoal> Goals { get; private set; } = new List<UserGoal>();
-        public ICollection<UserHobby> Hobbies { get; private set; } = new List<UserHobby>();
+        public ICollection<UserSkill> Skills { get;  set; } = new List<UserSkill>();
+        public ICollection<UserInterest> Interests { get;  set; } = new List<UserInterest>();
+        public ICollection<Request> Requests { get;  set; } = new List<Request>();
+        public ICollection<UserHobby> Hobbies { get;  set; } = new List<UserHobby>();
 
         private User() { } // для EF Core
 
@@ -55,7 +55,7 @@
 
         public void AddSkill(string skill) => Skills.Add(new UserSkill(Id, skill));
         public void AddInterest(string interest) => Interests.Add(new UserInterest(Id, interest));
-        public void AddGoal(string goal) => Goals.Add(new UserGoal(Id, goal));
+        public void AddRequests(string name,string goal) => Requests.Add(new Request(Id,name, goal));
         public void AddHobby(string hobby) => Hobbies.Add(new UserHobby(Id, hobby));
     }
 }
