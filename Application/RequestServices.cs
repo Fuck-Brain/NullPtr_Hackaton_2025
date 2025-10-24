@@ -21,20 +21,20 @@ public class RequestServices
 
     public async Task<Guid> CreateRequest(Guid userId, string name, string text)
     {
-        var user = _userRepository.GetUser(userId);
+        var user = await _userRepository.GetUser(userId);
         if (user is null)
             throw new AuthException();
         
         var request = new Request(userId,  name, text);
         _requestRepository.AddRequest(request);
-        var response = await _analyticsClient.ClassifyAsync(new ClassificationRequest(request, _userRepository.GetAllUser().ToList()));
+        var response = await _analyticsClient.ClassifyAsync(new ClassificationRequest(request, (await _userRepository.GetAllUser()).ToList()));
         var requestResult = new ResultRequest(request, user, response.ClassifiedUsers);
         // TODO: save
         return request.Id;
     }
 
-    public List<Request> GetUserRequests(Guid userId)
+    public async Task<List<Request>> GetUserRequests(Guid userId)
     {
-        return _requestRepository.GetAllRequests().Where(x => x.UserId == userId).ToList();
+        return (await _requestRepository.GetAllRequests()).Where(x => x.UserId == userId).ToList();
     }
 }
