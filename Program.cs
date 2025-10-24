@@ -30,6 +30,13 @@ builder.Services.AddScoped<IUserSkillRepository, UserSkillRepositorySqlLite>();
 builder.Services.AddScoped<UnitOfWork>();
 
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    bool seedEnabled = true; // включить для заполнения тестовыми данными
+    await DbInitializer.EnsureCreatedAndSeedAsync(db, seedEnabled);
+}
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
