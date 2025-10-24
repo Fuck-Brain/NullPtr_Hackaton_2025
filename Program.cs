@@ -1,10 +1,11 @@
 using Back.Application;
+using Back.Domain.Interfaces;
+using Back.Infrastructure;
 using Back.Infrastructure.DataBase;
-using Microsoft.OpenApi.Models;
+using Back.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
-using Back.Domain.Interfaces;
-using Back.Infrastructure.Repository;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IUserLikeRepository, UserLikeRepositorySqlLite>();
 builder.Services.AddScoped<IUserHobbyRepository, UserHobbyRepositorySqlLite>();
 builder.Services.AddScoped<IUserInterestRepository, UserInterestRepositorySqlLite>();
 builder.Services.AddScoped<IUserSkillRepository, UserSkillRepositorySqlLite>();
+builder.Services.AddScoped<UnitOfWork>();
 
 var app = builder.Build();
 app.UseSwagger();
