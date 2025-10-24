@@ -5,6 +5,7 @@
         public Guid Id { get; set; }
         public string Login {  get; set; }
         public string HashPassword { get; set; }
+        public string PhotoHash { get; set; }
         public string Name { get; set; }
         public string SurName { get; set; }
         public string FatherName { get; set; }
@@ -17,11 +18,12 @@
 
         public User() { }
 
-        public User(string login, string hashPassword, string name, string surName, string fatherName, int age, string gender, string city, string contact)
+        public User(string login, string hashPassword, string PhotoHash,string name, string surName, string fatherName, int age, string gender, string city, string contact)
         {
             Id = Guid.NewGuid();
             Login = login;
             HashPassword = hashPassword;
+            this.PhotoHash = PhotoHash;
             Name = name;
             SurName = surName;
             FatherName = fatherName;
