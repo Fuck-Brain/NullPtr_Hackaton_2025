@@ -65,7 +65,7 @@ public static class UserMapper
                 Gender = userDTO.Gender,
                 City = userDTO.City,
                 Contact = userDTO.Contact,
-                Skills = userDTO.Skills,
+                //Skills = userDTO.Skills, // TODO: list of skills
                 Description = userDTO.DescribeUser
             });
             // }
