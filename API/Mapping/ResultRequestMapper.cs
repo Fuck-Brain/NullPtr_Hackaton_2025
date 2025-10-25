@@ -12,7 +12,7 @@ public static class ResultRequestMapper
 {
     public static void MapGetUserResultRequestRecommendations(ref WebApplication app)
     {
-        app.MapGet(RequestRoute + "/getUserRecommendations/{id}",
+        app.MapGet(ResultRequestRoute + "/getUserRecommendations/{id}",
             async ([FromRoute] Guid id,
                 [FromServices] ResultRequestServices rRServices) =>
             {
@@ -24,7 +24,7 @@ public static class ResultRequestMapper
 
     public static void MapGetRequestRecommendations(ref WebApplication app)
     {
-        app.MapGet(RequestRoute + "/getUserRecommendations",
+        app.MapGet(ResultRequestRoute + "/getUserRecommendations",
             async ([FromBody] RequestRecommendationsDTO RRDTO,
                 [FromServices] ResultRequestServices rRServices) =>
             {

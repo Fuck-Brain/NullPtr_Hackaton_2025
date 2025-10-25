@@ -6,7 +6,7 @@ using static Back.API.Routes.ApiRoutes;
 
 namespace Back.API.Mapping;
 
-public class RequestMapper
+public static class RequestMapper
 {
     public static void MapPostCreateRegister(ref WebApplication app)
     {
