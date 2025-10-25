@@ -10,6 +10,7 @@ using Back.Application.Exceptions;
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
 using Back.Infrastructure;
+using Back.Infrastructure.DataBase;
 
 namespace Back.Application;
 
@@ -18,11 +19,13 @@ public class UserServices
     private readonly IUserRepository _userRepository;
     private readonly UnitOfWork _unit;
     private readonly IJwtTokenService _jwtTokenService;
-    public UserServices(IUserRepository userRepository, UnitOfWork unit, IJwtTokenService jwtTokenService)
+    private readonly ApplicationDbContext _ctx;
+    public UserServices(IUserRepository userRepository, UnitOfWork unit, IJwtTokenService jwtTokenService, ApplicationDbContext context)
     {
         _userRepository = userRepository;
         _unit = unit;
         _jwtTokenService = jwtTokenService;
+        _ctx = context;
     }
 
     public async Task<AuthResponseDto> Login(string login, string password)
@@ -94,27 +97,31 @@ public class UserServices
         if (info.Contact is not null) { user.Contact = info.Contact; }
         if (info.Skills is not null)
         {
-            user.Skills.Clear();
+            _ctx.UserSkills.RemoveRange(user.Skills);
             foreach (var skill in info.Skills)
-                user.AddSkill(skill);
-        }
-        if (info.Interests is not null)
-        {
-            user.Interests.Clear();
-            foreach (var interests in info.Interests)
             {
-                user.AddInterest(interests);
+                await _ctx.UserSkills.AddAsync(new UserSkill(user.Id, skill));
             }
         }
+
+        if (info.Interests is not null)
+        {
+            _ctx.UserInterests.RemoveRange(user.Interests);
+            foreach (var interest in info.Interests)
+                await _ctx.UserInterests.AddAsync(new UserInterest(user.Id, interest));
+        }
+
         if (info.Hobbies is not null)
         {
-            user.Hobbies.Clear();
+            _ctx.UserHobbies.RemoveRange(user.Hobbies);
             foreach (var hobby in info.Hobbies)
-                user.AddHobby(hobby);
+            {
+                await _ctx.UserHobbies.AddAsync(new UserHobby(user.Id, hobby));
+            }
         }
         if (info.Description is not null) { user.DescribeUser = info.Description; }
-        
-        await _userRepository.UpdateUser(user);
+
+        await _unit.SaveChangesAsync();
     }
 
     public async Task<UserDetailsDto> Me(Guid id) // only for authorized users!!
@@ -128,7 +135,6 @@ public class UserServices
         {
             Id = user.Id,
             Login = user.Login,
-            HashPassword = user.HashPassword,
             PhotoHash = user.PhotoHash,
             Name = user.Name,
             SurName = user.SurName,
@@ -137,7 +143,10 @@ public class UserServices
             Gender = user.Gender,
             DescribeUser = user.DescribeUser,
             City = user.City,
-            Contact = user.Contact
+            Contact = user.Contact,
+            Skills = user.Skills.Select(s => s.SkillName).ToList(),
+            Hobbies = user.Hobbies.Select(s => s.HobbyName).ToList(),
+            Interests = user.Interests.Select(s => s.InterestName).ToList(),
         };
     }
 
@@ -153,12 +162,12 @@ public class UserServices
            DescribeUser = usr.DescribeUser,
            Name = usr.Name,
            FatherName = usr.FatherName,
-           Hobbies = usr.Hobbies,
+           Hobbies = usr.Hobbies.Select(h => h.HobbyName).ToList(),
            Login = usr.Login,
            Id = usr.Id,
-           Interests = usr.Interests,
+           Interests = usr.Interests.Select(i => i.InterestName).ToList(),
            PhotoHash = usr.PhotoHash,
-           Skills = usr.Skills,
+           Skills = usr.Skills.Select(s => s.SkillName).ToList(),
            SurName = usr.SurName
        };
 
@@ -197,12 +206,12 @@ public class UserServices
                 DescribeUser = usr.DescribeUser,
                 Name = usr.Name,
                 FatherName = usr.FatherName,
-                Hobbies = usr.Hobbies,
+                Hobbies = usr.Hobbies.Select(h => h.HobbyName).ToList(),
                 Login = usr.Login,
                 Id = usr.Id,
-                Interests = usr.Interests,
+                Interests = usr.Interests.Select(i => i.InterestName).ToList(),
                 PhotoHash = usr.PhotoHash,
-                Skills = usr.Skills,
+                Skills = usr.Skills.Select(s => s.SkillName).ToList(),
                 SurName = usr.SurName
             };
         }).ToList();
@@ -221,12 +230,12 @@ public class UserServices
                 DescribeUser = usr.DescribeUser,
                 Name = usr.Name,
                 FatherName = usr.FatherName,
-                Hobbies = usr.Hobbies,
+                Hobbies = usr.Hobbies.Select(h => h.HobbyName).ToList(),
                 Login = usr.Login,
                 Id = usr.Id,
-                Interests = usr.Interests,
+                Interests = usr.Interests.Select(i => i.InterestName).ToList(),
                 PhotoHash = usr.PhotoHash,
-                Skills = usr.Skills,
+                Skills = usr.Skills.Select(s => s.SkillName).ToList(),
                 SurName = usr.SurName
             };
         }).ToList();
@@ -251,12 +260,12 @@ public class UserServices
                     DescribeUser = usr.DescribeUser,
                     Name = usr.Name,
                     FatherName = usr.FatherName,
-                    Hobbies = usr.Hobbies,
+                    Hobbies = usr.Hobbies.Select(h => h.HobbyName).ToList(),
                     Login = usr.Login,
                     Id = usr.Id,
-                    Interests = usr.Interests,
+                    Interests = usr.Interests.Select(i => i.InterestName).ToList(),
                     PhotoHash = usr.PhotoHash,
-                    Skills = usr.Skills,
+                    Skills = usr.Skills.Select(s => s.SkillName).ToList(),
                     SurName = usr.SurName,
                     Contact = usr.Contact
                 };

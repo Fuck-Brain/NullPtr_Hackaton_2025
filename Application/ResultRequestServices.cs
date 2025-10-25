@@ -33,12 +33,12 @@ public class ResultRequestServices
                     DescribeUser = usr.DescribeUser,
                     Name = usr.Name,
                     FatherName = usr.FatherName,
-                    Hobbies = usr.Hobbies,
+                    Hobbies = usr.Hobbies.Select(h => h.HobbyName).ToList(),
                     Login = usr.Login,
                     Id = usr.Id,
-                    Interests = usr.Interests,
+                    Interests = usr.Interests.Select(i => i.InterestName).ToList(),
                     PhotoHash = usr.PhotoHash,
-                    Skills = usr.Skills,
+                    Skills = usr.Skills.Select(s => s.SkillName).ToList(),
                     SurName = usr.SurName
                 };
             })                                 
@@ -59,12 +59,12 @@ public class ResultRequestServices
                 DescribeUser = usr.DescribeUser,
                 Name = usr.Name,
                 FatherName = usr.FatherName,
-                Hobbies = usr.Hobbies,
+                Hobbies = usr.Hobbies.Select(h => h.HobbyName).ToList(),
                 Login = usr.Login,
                 Id = usr.Id,
-                Interests = usr.Interests,
+                Interests = usr.Interests.Select(i => i.InterestName).ToList(),
                 PhotoHash = usr.PhotoHash,
-                Skills = usr.Skills,
+                Skills = usr.Skills.Select(s => s.SkillName).ToList(),
                 SurName = usr.SurName
             };
         }).ToList();

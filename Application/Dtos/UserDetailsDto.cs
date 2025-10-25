@@ -4,7 +4,6 @@ public class UserDetailsDto
 {
     public Guid Id { get; set; }
     public string Login { get; set; }
-    public string HashPassword { get; set; }
     public string PhotoHash { get; set; }
     public string Name { get; set; }
     public string SurName { get; set; }
@@ -14,5 +13,8 @@ public class UserDetailsDto
     public string DescribeUser { get; set; } = string.Empty;
     public string City { get; set; }
     public string Contact { get; set; }
+    public ICollection<string> Skills { get;  set; } = new List<string>();
+    public ICollection<string> Interests { get;  set; } = new List<string>();
+    public ICollection<string> Hobbies { get;  set; } = new List<string>();
 }
 
