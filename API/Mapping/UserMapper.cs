@@ -1,6 +1,7 @@
 ﻿using Back.Application;
 using Back.API.DTO;
 using Back.Application.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Back.API.Mapping;
 
@@ -8,7 +9,7 @@ public static class UserMapper
 {
     public static void MapPostRegister(ref WebApplication app)
     {
-        app.MapPost("/register", async (UserDTO userDTO, UserServices uServices) =>
+        app.MapPost("/register", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
         {
             string token;
             try
@@ -28,7 +29,7 @@ public static class UserMapper
 
     public static void MapGetLogin(ref WebApplication app)
     {
-        app.MapGet("/login", async (UserDTO userDTO, UserServices uServices) =>
+        app.MapGet("/login", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
         {
             string token;
             try
@@ -46,7 +47,7 @@ public static class UserMapper
 
     public static void MapPutUpdate(ref WebApplication app)
     {
-        app.MapPut("/update", async (UserDTO userDTO, UserServices uServices) =>
+        app.MapPut("/update", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
         {
             if (userDTO.Id is null)
                 return Results.BadRequest("Id is null");
@@ -79,6 +80,7 @@ public static class UserMapper
 
     public static void MapDelete(ref WebApplication app)
     {
-        app.MapDelete("/delete", async (Guid id, UserServices uServices) => { throw new NotImplementedException(); });
+        app.MapDelete("/delete",
+            async (Guid id, [FromServices] UserServices uServices) => { throw new NotImplementedException(); });
     }
 }
