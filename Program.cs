@@ -44,11 +44,14 @@ builder.Services.AddHttpClient<MLClient>(client =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<ErrorHandlingMiddleware>();
+
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    bool seedEnabled = true; // включить для заполнения тестовыми данными
+    bool seedEnabled = true; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     await DbInitializer.EnsureCreatedAndSeedAsync(db, seedEnabled);
 }
 app.UseSwagger();
@@ -56,9 +59,13 @@ app.UseSwaggerUI();
 app.MapControllers();
 
 app.MapGet("/", () => "Hello World!");
+
+// User
 UserMapper.MapPostRegister(ref app);
 UserMapper.MapGetLogin(ref app);
 UserMapper.MapPutUpdate(ref app);
-UserMapper.MapDelete(ref app);
+UserMapper.MapPostLikeDislike(ref app);
+
+// R
 
 app.Run();

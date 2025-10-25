@@ -2,16 +2,19 @@ using Back.Application.Dtos;
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
 using Back.Infrastructure;
+using Back.Infrastructure.MLClient;
 
 namespace Back.Application;
 
 public class ResultRequestServices
 {
     private readonly UnitOfWork unit;
+    private readonly MLClient _client;
     
-    public ResultRequestServices(UnitOfWork unit)
+    public ResultRequestServices(UnitOfWork unit, MLClient mlClient)
     {
         this.unit = unit;
+        _client = mlClient;
     }
 
     // maybe useless
@@ -42,13 +45,11 @@ public class ResultRequestServices
             .ToList();
     }
 
-    public async Task<List<UserBasicDto>> GetRequestRecommendations(Guid requestId)
+    public async Task<List<UserBasicDto>> GetRequestRecommendations(Guid userId, Guid requestId)
     {
-        var result = (await unit.Result.GetAllResultRequests()).FirstOrDefault(r => r.RequestId == requestId);
-        if (result is null)
-            throw new ArgumentException("no such request");
+        var results = await _client.GetRecommendedUsersAsync(requestId, userId);
         
-        return result.ResultRequestUsers.Select(usr =>
+        return results.Select(usr =>
         {
             return new UserBasicDto()
             {

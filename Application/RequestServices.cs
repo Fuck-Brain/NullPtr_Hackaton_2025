@@ -2,6 +2,7 @@ using Back.Application.Dtos;
 using Back.Application.Exceptions;
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
+using Back.Infrastructure.MLClient;
 
 namespace Back.Application;
 
@@ -11,12 +12,14 @@ public class RequestServices
     private readonly AnalyticsClient _analyticsClient;
     private readonly IUserRepository _userRepository;
     private readonly IResultRequestRepository _resultRepository;
-    public RequestServices(IRequestRepository repository, AnalyticsClient analyticsClient, IUserRepository userRepository, IResultRequestRepository resultRequestRepository)
+    private readonly MLClient _client;
+    public RequestServices(IRequestRepository repository, AnalyticsClient analyticsClient, IUserRepository userRepository, IResultRequestRepository resultRequestRepository, MLClient client)
     {
         _requestRepository = repository;
         _analyticsClient = analyticsClient;
         _userRepository = userRepository;
         _resultRepository = resultRequestRepository;
+        _client = client;
     }
 
     public async Task<Guid> CreateRequest(Guid userId, string name, string text)
@@ -28,9 +31,7 @@ public class RequestServices
         var request = new Request(userId,  name, text);
         user.Requests.Add(request);
         await _userRepository.UpdateUser(user);
-        var response = await _analyticsClient.ClassifyAsync(new ClassificationRequest(request, (await _userRepository.GetAllUser()).ToList()));
-        var requestResult = new ResultRequest(request, user, response.ClassifiedUsers);
-        await _resultRepository.AddResultRequest(requestResult);
+        await _client.ProcessRequestAsync(request.Id);
         return request.Id;
     }
     

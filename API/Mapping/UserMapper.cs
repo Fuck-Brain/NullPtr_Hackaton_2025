@@ -11,17 +11,10 @@ public static class UserMapper
     {
         app.MapPost("/register", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
         {
-            string token;
-            try
-            {
-                token = await uServices.Register(userDTO.Login, userDTO.Password, userDTO.PhotoHash, userDTO.Name,
-                    userDTO.SurName,
-                    userDTO.FatherName, userDTO.Age, userDTO.Gender, userDTO.City, userDTO.Contact);
-            }
-            catch (AuthException authEx)
-            {
-                return Results.BadRequest(authEx.Message);
-            }
+            var token = await uServices.Register(userDTO.Login, userDTO.Password, userDTO.PhotoHash,
+                userDTO.Name,
+                userDTO.SurName,
+                userDTO.FatherName, userDTO.Age, userDTO.Gender, userDTO.City, userDTO.Contact);
 
             return Results.Created((string?)null, token);
         });
@@ -31,15 +24,7 @@ public static class UserMapper
     {
         app.MapGet("/login", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
         {
-            string token;
-            try
-            {
-                token = await uServices.Login(userDTO.Login, userDTO.Password);
-            }
-            catch (AuthException authEx)
-            {
-                return Results.BadRequest(authEx.Message);
-            }
+            var token = await uServices.Login(userDTO.Login, userDTO.Password);
 
             return Results.Ok(token);
         });
@@ -52,8 +37,6 @@ public static class UserMapper
             if (userDTO.Id is null)
                 return Results.BadRequest("Id is null");
 
-            // try
-            // {
             await uServices.Update(userDTO.Id!.Value, new UserUpdateDto()
             {
                 Login = userDTO.Login,
@@ -68,19 +51,28 @@ public static class UserMapper
                 //Skills = userDTO.Skills, // TODO: list of skills
                 Description = userDTO.DescribeUser
             });
-            // }
-            // catch (Exception exc)
-            // {
-            //     throw new Exception(exc.Message);
-            // }
 
             return Results.Ok();
         });
     }
 
-    public static void MapDelete(ref WebApplication app)
+    public static void MapPostLikeDislike(ref WebApplication app)
     {
-        app.MapDelete("/delete",
-            async (Guid id, [FromServices] UserServices uServices) => { throw new NotImplementedException(); });
+        app.MapPost("/{id:guid}/like",
+            async ([FromRoute] Guid id, [FromBody] Guid idUserFrom, [FromServices] UserServices uServices) =>
+            {
+                await uServices.LikeUser(idUserFrom, id);
+
+                return Results.Ok();
+            }
+        );
+
+        app.MapPost("/{id:guid}/dislike",
+            async ([FromRoute] Guid id, [FromBody] Guid idUserFrom, [FromServices] UserServices uServices) =>
+            {
+                await uServices.DislikeUser(idUserFrom, id);
+                
+                return Results.Ok();
+            });
     }
 }
