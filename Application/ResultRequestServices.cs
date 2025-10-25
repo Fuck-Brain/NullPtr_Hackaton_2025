@@ -1,23 +1,72 @@
+using Back.Application.Dtos;
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
 using Back.Infrastructure;
+using Back.Infrastructure.MLClient;
 
 namespace Back.Application;
 
 public class ResultRequestServices
 {
     private readonly UnitOfWork unit;
+    private readonly MLClient _client;
     
-    public ResultRequestServices(UnitOfWork unit)
+    public ResultRequestServices(UnitOfWork unit, MLClient mlClient)
     {
         this.unit = unit;
+        _client = mlClient;
     }
 
-    public async Task<List<User>> GetUserResultRequestRecommendations(Guid userId)
+    // maybe useless
+    public async Task<List<UserBasicDto>> GetUserResultRequestRecommendations(Guid userId)
     {
         return (await unit.Result.GetAllResultRequests()).Where(r => r.UserRequestId == userId)
             .SelectMany(r => r.ResultRequestUsers ?? Enumerable.Empty<User>()) 
-            .DistinctBy(u => u.Id)                                 
+            .DistinctBy(u => u.Id)
+            .Select(usr =>
+            {
+                return new UserBasicDto()
+                {
+                    Age = usr.Age,
+                    Gender = usr.Gender,
+                    City = usr.City,
+                    DescribeUser = usr.DescribeUser,
+                    Name = usr.Name,
+                    FatherName = usr.FatherName,
+                    Hobbies = usr.Hobbies,
+                    Login = usr.Login,
+                    Id = usr.Id,
+                    Interests = usr.Interests,
+                    PhotoHash = usr.PhotoHash,
+                    Skills = usr.Skills,
+                    SurName = usr.SurName
+                };
+            })                                 
             .ToList();
+    }
+
+    public async Task<List<UserBasicDto>> GetRequestRecommendations(Guid userId, Guid requestId)
+    {
+        var results = await _client.GetRecommendedUsersAsync(requestId, userId);
+        
+        return results.Select(usr =>
+        {
+            return new UserBasicDto()
+            {
+                Age = usr.Age,
+                Gender = usr.Gender,
+                City = usr.City,
+                DescribeUser = usr.DescribeUser,
+                Name = usr.Name,
+                FatherName = usr.FatherName,
+                Hobbies = usr.Hobbies,
+                Login = usr.Login,
+                Id = usr.Id,
+                Interests = usr.Interests,
+                PhotoHash = usr.PhotoHash,
+                Skills = usr.Skills,
+                SurName = usr.SurName
+            };
+        }).ToList();
     }
 }
