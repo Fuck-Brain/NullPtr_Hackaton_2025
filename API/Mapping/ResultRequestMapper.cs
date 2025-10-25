@@ -19,7 +19,7 @@ public static class ResultRequestMapper
                 var listUserBasic = await rRServices.GetUserResultRequestRecommendations(id);
 
                 return Results.Ok(listUserBasic);
-            }).Produces<List<UserBasicDto>>(StatusCodes.Status302Found);
+            }).Produces<List<UserBasicDto>>();
     }
 
     public static void MapGetRequestRecommendations(ref WebApplication app)
@@ -31,6 +31,6 @@ public static class ResultRequestMapper
                 var listUserBasic = await rRServices.GetRequestRecommendations(RRDTO.userId, RRDTO.requestId);
 
                 return Results.Ok(listUserBasic);
-            }).Produces<List<UserBasicDto>>(StatusCodes.Status302Found);
+            }).Produces<List<UserBasicDto>>();
     }
 }

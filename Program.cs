@@ -50,7 +50,7 @@ builder.Services.AddHttpClient<MLClient>(client =>
 });
 
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
-                 ?? throw new InvalidOperationException("JWT configuration is missing.");
+                  ?? throw new InvalidOperationException("JWT configuration is missing.");
 var key = Encoding.UTF8.GetBytes(jwtSettings.Secret ?? throw new InvalidOperationException("JWT secret is missing."));
 
 builder.Services.AddAuthentication(options =>
@@ -78,8 +78,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
     {
         policy.AllowAnyOrigin()
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
@@ -94,6 +94,7 @@ using (var scope = app.Services.CreateScope())
     bool seedEnabled = true; // �������� ��� ���������� ��������� �������
     await DbInitializer.EnsureCreatedAndSeedAsync(db, seedEnabled);
 }
+
 app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -122,5 +123,12 @@ RequestMapper.MapGetGetUserRequests(ref app);
 // ResultRequest
 ResultRequestMapper.MapGetUserResultRequestRecommendations(ref app);
 ResultRequestMapper.MapGetRequestRecommendations(ref app);
+
+// ML
+MLMapper.MapGetGetRecommendedUsers(ref app);
+MLMapper.GetGetRequestsFrequencyStatistics(ref app);
+MLMapper.GetGetMostPopularSkills(ref app);
+MLMapper.GetGetMostPopularHobby(ref app);
+MLMapper.GetGetMostPopularInterest(ref app);    
 
 app.Run();
