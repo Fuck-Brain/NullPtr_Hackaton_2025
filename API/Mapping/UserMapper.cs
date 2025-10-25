@@ -25,7 +25,7 @@ public static class UserMapper
 
     public static void MapGetLogin(ref WebApplication app)
     {
-        app.MapGet(UserRoute + "/login", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
+        app.MapGet(UserRoute + "/login", async ([FromBody] UserLoginDto userDTO, [FromServices] UserServices uServices) =>
         {
             var token = await uServices.Login(userDTO.Login, userDTO.Password);
 
