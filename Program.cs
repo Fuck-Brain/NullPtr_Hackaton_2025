@@ -1,15 +1,19 @@
 using Back.API.DTO;
 using Back.API.Mapping;
 using Back.Application;
+using Back.Application.Auth;
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
 using Back.Infrastructure;
 using Back.Infrastructure.DataBase;
 using Back.Infrastructure.MLClient;
 using Back.Infrastructure.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using UserMapper = Back.API.Mapping.UserMapper;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +26,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAuthorization();
 builder.Services.AddScoped<IUserRepository, UserRepositorySqlLite>();
 builder.Services.AddScoped<IRequestRepository, RequestRepositorySqlLite>();
 builder.Services.AddScoped<IResultRequestRepository, ResultRequestRepositorySqlLite>();
@@ -30,6 +35,8 @@ builder.Services.AddScoped<IUserHobbyRepository, UserHobbyRepositorySqlLite>();
 builder.Services.AddScoped<IUserInterestRepository, UserInterestRepositorySqlLite>();
 builder.Services.AddScoped<IUserSkillRepository, UserSkillRepositorySqlLite>();
 builder.Services.AddScoped<UnitOfWork>();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
 /// Aplication Services
 builder.Services.AddScoped<AnalyticsClient>();
@@ -41,6 +48,29 @@ var mlServerUrl = builder.Configuration["MLServer:BaseUrl"];
 builder.Services.AddHttpClient<MLClient>(client =>
 {
     client.BaseAddress = new Uri(mlServerUrl ?? "http://localhost:8000/");
+});
+
+var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
+                 ?? throw new InvalidOperationException("JWT configuration is missing.");
+var key = Encoding.UTF8.GetBytes(jwtSettings.Secret ?? throw new InvalidOperationException("JWT secret is missing."));
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = !string.IsNullOrWhiteSpace(jwtSettings.Issuer),
+        ValidateAudience = !string.IsNullOrWhiteSpace(jwtSettings.Audience),
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = string.IsNullOrWhiteSpace(jwtSettings.Issuer) ? null : jwtSettings.Issuer,
+        ValidAudience = string.IsNullOrWhiteSpace(jwtSettings.Audience) ? null : jwtSettings.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ClockSkew = TimeSpan.Zero
+    };
 });
 
 var app = builder.Build();
@@ -56,6 +86,8 @@ using (var scope = app.Services.CreateScope())
 }
 app.UseSwagger();
 app.UseSwaggerUI();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.MapGet("/", () => "Hello World!");

@@ -3,6 +3,7 @@ using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
+using Back.Application.Auth;
 using Back.Application.Dtos;
 using Back.Application.Exceptions;
 using Back.Domain.Entity;
@@ -15,10 +16,12 @@ public class UserServices
 {
     private readonly IUserRepository _userRepository;
     private readonly UnitOfWork _unit;
-    public UserServices(IUserRepository userRepository, UnitOfWork unit)
+    private readonly IJwtTokenService _jwtTokenService;
+    public UserServices(IUserRepository userRepository, UnitOfWork unit, IJwtTokenService jwtTokenService)
     {
         _userRepository = userRepository;
         _unit = unit;
+        _jwtTokenService = jwtTokenService;
     }
 
     public async Task<string> Login(string login, string password)
@@ -36,23 +39,26 @@ public class UserServices
 
         if (user.HashPassword != passwordHash)
             throw new AuthException();
-        
-        
-        // TODO: gen token
-        string token = "token";
-        return token;
+
+        return _jwtTokenService.GenerateToken(user.Login);
     }
 
     public async Task<string> Register(string login, string password, string photoHash, string name, string surName, string fatherName, int age, string gender, string city, string contact)
     {
         if ((await _userRepository.GetAllUser()).Any(u => u.Login == login))
             throw new AuthException();
-        
-        var user = new User(login, password, photoHash, name, surName, fatherName, age, gender, city, contact);
+
+        string passwordHash;
+        using (var sha = new SHA256Managed())
+        {
+            byte[] textData = Encoding.UTF8.GetBytes(password);
+            byte[] hash = sha.ComputeHash(textData);
+            passwordHash = BitConverter.ToString(hash).Replace("-", String.Empty);
+        }
+
+        var user = new User(login, passwordHash, photoHash, name, surName, fatherName, age, gender, city, contact);
         await _userRepository.AddUser(user);
-        // TODO: gen token
-        string token = "token";
-        return token;
+        return _jwtTokenService.GenerateToken(user.Login);
     }
 
     public async Task Update(Guid id, UserUpdateDto info)
