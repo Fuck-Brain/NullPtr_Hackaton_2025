@@ -1,6 +1,7 @@
 ﻿using Back.Application;
 using Back.API.DTO;
 using Back.Application.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Back.API.Mapping;
@@ -55,7 +56,7 @@ public static class UserMapper
             });
 
             return Results.Ok();
-        });
+        }).RequireAuthorization();
     }
 
     public static void MapGetMe(ref WebApplication app)
@@ -87,7 +88,7 @@ public static class UserMapper
 
                 return Results.Ok();
             }
-        );
+        ).RequireAuthorization();
 
         app.MapPost("/{id:guid}/unlike",
             async ([FromRoute] Guid id, [FromBody] Guid idUserFrom, [FromServices] UserServices uServices) =>
@@ -95,7 +96,7 @@ public static class UserMapper
                 await uServices.UnLikeUser(idUserFrom, id);
 
                 return Results.Ok();
-            });
+            }).RequireAuthorization();
     }
 
     public static void MapGetGetLiked(ref WebApplication app)
