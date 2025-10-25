@@ -12,6 +12,8 @@ namespace Back.Infrastructure.DataBase
         public DbSet<UserHobby> UserHobbies => Set<UserHobby>();
         public DbSet<UserInterest> UserInterests => Set<UserInterest>();
         public DbSet<UserSkill> UserSkills => Set<UserSkill>();
+        public DbSet<Chat> Chats => Set<Chat>();
+        public DbSet<Message> Messages => Set<Message>();
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)

@@ -6,6 +6,7 @@ using Back.Domain.Entity;
 using Back.Domain.Interfaces;
 using Back.Infrastructure;
 using Back.Infrastructure.DataBase;
+using Back.Infrastructure.HubChat;
 using Back.Infrastructure.MLClient;
 using Back.Infrastructure.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -72,6 +73,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
 {
@@ -122,5 +124,8 @@ RequestMapper.MapGetGetUserRequests(ref app);
 // ResultRequest
 ResultRequestMapper.MapGetUserResultRequestRecommendations(ref app);
 ResultRequestMapper.MapGetRequestRecommendations(ref app);
+
+//Chat
+app.MapHub<ChatHub>("/chatHub");
 
 app.Run();
