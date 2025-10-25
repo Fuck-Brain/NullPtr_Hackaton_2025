@@ -20,12 +20,14 @@ public class UserServices
     private readonly UnitOfWork _unit;
     private readonly IJwtTokenService _jwtTokenService;
     private readonly ApplicationDbContext _ctx;
-    public UserServices(IUserRepository userRepository, UnitOfWork unit, IJwtTokenService jwtTokenService, ApplicationDbContext context)
+    private readonly IChatRepository _chatRepository;
+    public UserServices(IUserRepository userRepository, UnitOfWork unit, IJwtTokenService jwtTokenService, ApplicationDbContext context, IChatRepository chat)
     {
         _userRepository = userRepository;
         _unit = unit;
         _jwtTokenService = jwtTokenService;
         _ctx = context;
+        _chatRepository = chat;
     }
 
     public async Task<AuthResponseDto> Login(string login, string password)
@@ -179,7 +181,15 @@ public class UserServices
 
         if (like != null)
             await _unit.userLikeRepository.DeleteAsync(like.Id);
-
+        
+        like = (await _unit.userLikeRepository.GetUserLikes(to)).FirstOrDefault(l => l.ToUserId == from);
+        if (like == null)
+        {
+            var chat = await _chatRepository.GetChatAsync(from, to);
+            if (chat == null)
+                await _chatRepository.CreateChatAsync(from, to);
+        }
+        
         like = new UserLike(from, to);
         await _unit.userLikeRepository.AddAsync(like);
     }
