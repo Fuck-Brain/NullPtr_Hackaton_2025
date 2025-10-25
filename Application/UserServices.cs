@@ -1,17 +1,21 @@
 using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
 using Back.Application.Exceptions;
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
+using Back.Infrastructure;
 
 namespace Back.Application;
 
 public class UserServices
 {
     private readonly IUserRepository _userRepository;
-    public UserServices(IUserRepository userRepository)
+    private readonly UnitOfWork _unit;
+    public UserServices(IUserRepository userRepository, UnitOfWork unit)
     {
         _userRepository = userRepository;
+        _unit = unit;
     }
 
     public async Task<string> Login(string login, string password)
@@ -95,5 +99,27 @@ public class UserServices
         if (info.Description is not null) { user.DescribeUser = info.Description; }
         
         await _userRepository.UpdateUser(user);
+    }
+
+    public async Task LikeUser(Guid from, Guid to)
+    {
+        var like = (await _unit.userLikeRepository.GetUserLikes(from)).FirstOrDefault(l => l.ToUserId == to);
+
+        if (like != null)
+            await _unit.userLikeRepository.DeleteAsync(like.Id);
+
+        like = new UserLike(from, to, true);
+        await _unit.userLikeRepository.AddAsync(like);
+    }
+    
+    public async Task DislikeUser(Guid from, Guid to)
+    {
+        var like = (await _unit.userLikeRepository.GetUserLikes(from)).FirstOrDefault(l => l.ToUserId == to);
+
+        if (like != null)
+            await _unit.userLikeRepository.DeleteAsync(like.Id);
+
+        like = new UserLike(from, to, false);
+        await _unit.userLikeRepository.AddAsync(like);
     }
 }
