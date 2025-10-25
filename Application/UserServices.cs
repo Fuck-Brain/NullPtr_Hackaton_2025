@@ -110,13 +110,28 @@ public class UserServices
         await _userRepository.UpdateUser(user);
     }
 
-    public async Task<User> Me(Guid id) // only for authorized users!!
+    public async Task<UserDetailsDto> Me(Guid id) // only for authorized users!!
     {
         var user = await _userRepository.GetUser(id);
-        
+
         if (user == null)
             throw new AuthException();
-        return user;
+
+        return new UserDetailsDto
+        {
+            Id = user.Id,
+            Login = user.Login,
+            HashPassword = user.HashPassword,
+            PhotoHash = user.PhotoHash,
+            Name = user.Name,
+            SurName = user.SurName,
+            FatherName = user.FatherName,
+            Age = user.Age,
+            Gender = user.Gender,
+            DescribeUser = user.DescribeUser,
+            City = user.City,
+            Contact = user.Contact
+        };
     }
 
     public async Task<UserBasicDto> GetUser(Guid id) // for getting other users 

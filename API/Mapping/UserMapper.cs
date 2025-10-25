@@ -63,17 +63,17 @@ public static class UserMapper
 
     public static void MapGetMe(ref WebApplication app)
     {
-        app.MapGet(UserRoute + "{id:guid}/me", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
+        app.MapGet(UserRoute + "/{id:guid}/me", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
         {
             var user = await uServices.Me(id);
 
             return Results.Ok(user);
-        }).Produces<User>(StatusCodes.Status200OK);
+        }).Produces<UserDetailsDto>(StatusCodes.Status200OK);
     }
 
     public static void MapGetGetUser(ref WebApplication app)
     {
-        app.MapGet(UserRoute + "{id:guid}", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
+        app.MapGet(UserRoute + "/{id:guid}", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
         {
             var userBasic = await uServices.GetUser(id);
 
@@ -103,7 +103,7 @@ public static class UserMapper
 
     public static void MapGetGetLiked(ref WebApplication app)
     {
-        app.MapPost(UserRoute + "/{id:guid}/getLiked",
+        app.MapGet(UserRoute + "/{id:guid}/getLiked",
             async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
             {
                 var list = await uServices.GetLiked(id);
@@ -114,7 +114,7 @@ public static class UserMapper
 
     public static void MapGetGetHasLiked(ref WebApplication app)
     {
-        app.MapGet(UserRoute + "{id:guid}/hasLiked",
+        app.MapGet(UserRoute + "/{id:guid}/hasLiked",
             async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
             {
                 var listHasLiked = await uServices.GetHasLiked(id);
@@ -125,12 +125,12 @@ public static class UserMapper
 
     public static void MapGetGetMatches(ref WebApplication app)
     {
-        app.MapGet(UserRoute + "{id:guid}/getMatches",
+        app.MapGet(UserRoute + "/{id:guid}/getMatches",
             async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
             {
                 var listMatches = await uServices.GetMatches(id);
 
                 return Results.Ok(listMatches);
-            }).Produces<UserMatchDto>();
+            }).Produces<List<UserMatchDto>>();
     }
 }

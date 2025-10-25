@@ -107,6 +107,7 @@ app.MapGet("/", () => "Hello World!");
 UserMapper.MapPostRegister(ref app);
 UserMapper.MapGetLogin(ref app);
 UserMapper.MapPutUpdate(ref app);
+UserMapper.MapGetMe(ref app);
 
 UserMapper.MapGetGetUser(ref app);
 UserMapper.MapPostLikeUnlike(ref app);

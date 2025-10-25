@@ -1,7 +1,7 @@
 ﻿using Back.Domain.Entity;
 using Back.Domain.Interfaces;
 using Back.Infrastructure.DataBase;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Back.Infrastructure.Repository
