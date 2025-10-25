@@ -46,7 +46,7 @@ public class UserServices
             throw new AuthException();
         
         var user = new User(login, password, photoHash, name, surName, fatherName, age, gender, city, contact);
-        
+        await _userRepository.AddUser(user);
         // TODO: gen token
         string token = "token";
         return token;
