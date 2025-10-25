@@ -12,7 +12,7 @@ public static class UserMapper
     public static void MapPostRegister(ref WebApplication app)
     {
         app.MapPost(UserRoute + "/register",
-            async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
+            async ([FromBody] UserRegisterDTO userDTO, [FromServices] UserServices uServices) =>
             {
                 var token = await uServices.Register(userDTO.Login, userDTO.Password, userDTO.PhotoHash,
                     userDTO.Name,

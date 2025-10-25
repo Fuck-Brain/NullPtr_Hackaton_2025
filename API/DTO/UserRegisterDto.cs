@@ -1,8 +1,7 @@
-﻿namespace Back.API.DTO;
+namespace Back.API.DTO;
 
-public class UserDTO
+public class UserRegisterDTO
 {
-    public Guid? Id { get; set; }
     public string Login { get; set; }
     public string Password { get; set; }
     public string PhotoHash { get; set; }
@@ -11,7 +10,6 @@ public class UserDTO
     public string FatherName { get; set; }
     public int Age { get; set; }
     public string Gender { get; set; }
-    public string DescribeUser { get; set; } = string.Empty;
     public string City { get; set; }
     public string Contact { get; set; }
 }
