@@ -16,8 +16,8 @@ public class UserBasicDto
     public string City { get;  set; }
 
     // связи (коллекции)
-    public ICollection<UserSkill> Skills { get;  set; } = new List<UserSkill>();
-    public ICollection<UserInterest> Interests { get;  set; } = new List<UserInterest>();
-    public ICollection<UserHobby> Hobbies { get;  set; } = new List<UserHobby>();
+    public ICollection<string> Skills { get;  set; } = new List<string>();
+    public ICollection<string> Interests { get;  set; } = new List<string>();
+    public ICollection<string> Hobbies { get;  set; } = new List<string>();
 
 }
