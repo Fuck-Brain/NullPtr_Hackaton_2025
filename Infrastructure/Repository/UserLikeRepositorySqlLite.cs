@@ -25,6 +25,8 @@ namespace Back.Infrastructure.Repository
         public async Task<UserLike?> GetAsync(Guid fromUserId, Guid toUserId)
         {
             return await _context.UserLikes
+                .Include(x => x.FromUser)
+                .Include(x => x.ToUser)
                 .FirstOrDefaultAsync(x => x.FromUserId == fromUserId && x.ToUserId == toUserId);
         }
 
@@ -32,6 +34,8 @@ namespace Back.Infrastructure.Repository
         {
             return await _context.UserLikes
                 .Where(x => x.FromUserId == userId)
+                .Include(x => x.FromUser)
+                .Include(x => x.ToUser)
                 .ToListAsync();
         }
 
@@ -54,6 +58,15 @@ namespace Back.Infrastructure.Repository
         {
             _context.Update(like);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<UserLike>> GetToUserAsync(Guid userId)
+        {
+            return await _context.UserLikes
+                .Where(x => x.ToUserId == userId)
+                .Include(x => x.FromUser)
+                .Include(x => x.ToUser)
+                .ToListAsync();
         }
     }
 }
