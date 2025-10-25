@@ -52,6 +52,16 @@ namespace Back.Infrastructure.Repository
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
+        public async Task<User> GetUserByLogin(string login)
+        {
+            return await _context.Users
+                .Include(x => x.Interests)
+                .Include(x => x.Hobbies)
+                .Include(x => x.Skills)
+                .Include(x => x.Requests)
+                .FirstOrDefaultAsync(x => x.Login == login);
+        }
+
         public async Task UpdateUser(User user)
         {
             _context.Users.Update(user);
