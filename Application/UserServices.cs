@@ -1,6 +1,8 @@
+using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
+using Back.Application.Dtos;
 using Back.Application.Exceptions;
 using Back.Domain.Entity;
 using Back.Domain.Interfaces;
@@ -108,18 +110,87 @@ public class UserServices
         if (like != null)
             await _unit.userLikeRepository.DeleteAsync(like.Id);
 
-        like = new UserLike(from, to, true);
+        like = new UserLike(from, to);
         await _unit.userLikeRepository.AddAsync(like);
     }
-    
-    public async Task DislikeUser(Guid from, Guid to)
+
+    public async Task<List<UserBasicDto>> GetLiked(Guid id)
     {
-        var like = (await _unit.userLikeRepository.GetUserLikes(from)).FirstOrDefault(l => l.ToUserId == to);
+        return (await _unit.userLikeRepository.GetUserLikes(id)).Select(l =>
+        {
+            var usr = l.ToUser;
+            return new UserBasicDto()
+            {
+                Age = usr.Age,
+                Gender = usr.Gender,
+                City = usr.City,
+                DescribeUser = usr.DescribeUser,
+                Name = usr.Name,
+                FatherName = usr.FatherName,
+                Hobbies = usr.Hobbies,
+                Login = usr.Login,
+                Id = usr.Id,
+                Interests = usr.Interests,
+                PhotoHash = usr.PhotoHash,
+                Skills = usr.Skills,
+                SurName = usr.SurName
+            };
+        }).ToList();
+    }
 
-        if (like != null)
-            await _unit.userLikeRepository.DeleteAsync(like.Id);
+    public async Task<List<UserBasicDto>> GetHasLiked(Guid id)
+    {
+        return (await _unit.userLikeRepository.GetToUserAsync(id)).Select(l =>
+        {
+            var usr = l.ToUser;
+            return new UserBasicDto()
+            {
+                Age = usr.Age,
+                Gender = usr.Gender,
+                City = usr.City,
+                DescribeUser = usr.DescribeUser,
+                Name = usr.Name,
+                FatherName = usr.FatherName,
+                Hobbies = usr.Hobbies,
+                Login = usr.Login,
+                Id = usr.Id,
+                Interests = usr.Interests,
+                PhotoHash = usr.PhotoHash,
+                Skills = usr.Skills,
+                SurName = usr.SurName
+            };
+        }).ToList();
+    }
 
-        like = new UserLike(from, to, false);
-        await _unit.userLikeRepository.AddAsync(like);
+    public async Task<List<UserMatchDto>> GetMatches(Guid id)
+    {
+        var toUser = await _unit.userLikeRepository.GetToUserAsync(id);
+        var fromUser = await _unit.userLikeRepository.GetUserLikes(id);
+        
+        return toUser
+            .Where(to => fromUser.Any(fr =>
+                fr.FromUserId == to.ToUserId && fr.ToUserId == to.FromUserId))
+            .Select(l =>
+            {
+                var usr = l.ToUser;
+                return new UserMatchDto()
+                {
+                    Age = usr.Age,
+                    Gender = usr.Gender,
+                    City = usr.City,
+                    DescribeUser = usr.DescribeUser,
+                    Name = usr.Name,
+                    FatherName = usr.FatherName,
+                    Hobbies = usr.Hobbies,
+                    Login = usr.Login,
+                    Id = usr.Id,
+                    Interests = usr.Interests,
+                    PhotoHash = usr.PhotoHash,
+                    Skills = usr.Skills,
+                    SurName = usr.SurName,
+                    Contact = usr.Contact
+                };
+            })
+            .ToList();
     }
 }
