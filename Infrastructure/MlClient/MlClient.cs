@@ -71,6 +71,10 @@ namespace Back.Infrastructure.MLClient
         {
             var request = await _context.Requests.FindAsync(requestId);
             var allResuest = await _context.Requests.ToListAsync();
+            User currentUser = await _context.Users.Include(x => x.Hobbies).
+                Include(x => x.Interests).
+                Include(x => x.Skills).
+                FirstOrDefaultAsync(x => x.Id == userId);
             var allUsers = await _context.Users.Include(x => x.Hobbies).
                 Include(x => x.Interests).
                 Include(x => x.Skills).
@@ -86,6 +90,14 @@ namespace Back.Infrastructure.MLClient
                 {
                     Id =  request.Id,
                     UserId = request.UserId,
+                    User = new
+                    {
+                        Id = currentUser.Id,
+                        DescribeUser = currentUser.DescribeUser,
+                        Skills = string.Join(", ", currentUser.Skills.Select(s => s.SkillName)),
+                        Interests = string.Join(", ", currentUser.Interests.Select(s => s.InterestName)),
+                        Hobbies = string.Join(", ", currentUser.Hobbies.Select(s => s.HobbyName))
+                    },
                     NameRequest = request.NameRequest,
                     TextRequest = request.TextRequest,  
                     Label = request.Label,
