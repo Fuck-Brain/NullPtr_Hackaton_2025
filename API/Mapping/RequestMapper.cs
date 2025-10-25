@@ -29,6 +29,6 @@ public static class RequestMapper
                 var listRequests = await rServices.GetUserRequests(id);
 
                 return Results.Ok(listRequests);
-            }).Produces<Request>(StatusCodes.Status302Found);
+            }).Produces<Request>();
     }
 }
