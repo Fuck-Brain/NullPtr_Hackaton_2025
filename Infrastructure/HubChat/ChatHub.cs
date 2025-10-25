@@ -1,10 +1,12 @@
 ﻿using Back.Domain.Entity;
 using Back.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Text.RegularExpressions;
 
 namespace Back.Infrastructure.HubChat
 {
+    [Authorize]
     public class ChatHub : Hub
     {
         private readonly IChatRepository _chatRepository;

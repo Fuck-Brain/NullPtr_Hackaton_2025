@@ -70,6 +70,18 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+                context.Token = accessToken;
+            return Task.CompletedTask;
+        }
+    };
 });
 
 builder.Services.AddSignalR();
@@ -80,7 +92,8 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod();
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -125,16 +138,17 @@ RequestMapper.MapGetGetUserRequests(ref app);
 ResultRequestMapper.MapGetUserResultRequestRecommendations(ref app);
 ResultRequestMapper.MapGetRequestRecommendations(ref app);
 
-<<<<<<< HEAD
-//Chat
-app.MapHub<ChatHub>("/chatHub");
-=======
+
+
+
+
 // ML
 MLMapper.MapGetGetRecommendedUsers(ref app);
 MLMapper.MapGetGetRequestsFrequencyStatistics(ref app);
 MLMapper.MapGetGetMostPopularSkills(ref app);
 MLMapper.MapGetGetMostPopularHobby(ref app);
 MLMapper.MapGetGetMostPopularInterest(ref app);
->>>>>>> 9b978fc58d000fd666920cb1ca88276d58ccdce7
 
+//Chat
+app.MapHub<ChatHub>("/chatHub");
 app.Run();
