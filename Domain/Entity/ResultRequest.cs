@@ -4,7 +4,7 @@
     {
         public Guid Id { get; private set; }
 
-        // ---- Связь "один к одному" или "один ко многим" с Request ----
+        // ---- Связь "один к одному" с Request ----
         public Guid RequestId { get;  set; }
         public Request Request { get;  set; }
 

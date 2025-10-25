@@ -33,7 +33,7 @@ public class RequestServices
         await _resultRepository.AddResultRequest(requestResult);
         return request.Id;
     }
-
+    
     public async Task<List<Request>> GetUserRequests(Guid userId)
     {
         return (await _requestRepository.GetAllRequests()).Where(x => x.UserId == userId).ToList();
