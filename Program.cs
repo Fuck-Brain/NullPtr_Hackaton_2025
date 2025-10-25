@@ -15,7 +15,6 @@ using UserMapper = Back.API.Mapping.UserMapper;
 var builder = WebApplication.CreateBuilder(args);
 
 
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -54,6 +53,7 @@ using (var scope = app.Services.CreateScope())
     bool seedEnabled = true; // �������� ��� ���������� ��������� �������
     await DbInitializer.EnsureCreatedAndSeedAsync(db, seedEnabled);
 }
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapControllers();
@@ -64,7 +64,12 @@ app.MapGet("/", () => "Hello World!");
 UserMapper.MapPostRegister(ref app);
 UserMapper.MapGetLogin(ref app);
 UserMapper.MapPutUpdate(ref app);
-UserMapper.MapPostLikeDislike(ref app);
+
+UserMapper.MapGetGetUser(ref app);
+UserMapper.MapPostLikeUnlike(ref app);
+UserMapper.MapGetGetLiked(ref app);
+UserMapper.MapGetGetHasLiked(ref app);
+UserMapper.MapGetGetMatches(ref app);
 
 // R
 
