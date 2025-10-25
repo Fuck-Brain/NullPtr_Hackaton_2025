@@ -1,23 +1,21 @@
+using Back.API.DTO;
+using Back.API.Mapping;
 using Back.Application;
+using Back.Domain.Entity;
 using Back.Domain.Interfaces;
 using Back.Infrastructure;
 using Back.Infrastructure.DataBase;
+using Back.Infrastructure.MLClient;
 using Back.Infrastructure.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Sqlite;
-using Back.Domain.Entity;
-using Back.API.DTO;
-using Back.API.Mapping;
-using UserMapper = Back.API.Mapping.UserMapper;
 using Microsoft.OpenApi.Models;
+using UserMapper = Back.API.Mapping.UserMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpClient<AnalyticsClient>(c =>
-{
-    c.BaseAddress = new Uri("http://localhost:8000/");
-    c.Timeout = TimeSpan.FromSeconds(10);
-});
+
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -37,6 +35,13 @@ builder.Services.AddScoped<UnitOfWork>();
 builder.Services.AddScoped<AnalyticsClient>();
 builder.Services.AddScoped<RequestServices>();
 builder.Services.AddScoped<UserServices>();
+
+var mlServerUrl = builder.Configuration["MLServer:BaseUrl"];
+
+builder.Services.AddHttpClient<MLClient>(client =>
+{
+    client.BaseAddress = new Uri(mlServerUrl ?? "http://localhost:8000/");
+});
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
