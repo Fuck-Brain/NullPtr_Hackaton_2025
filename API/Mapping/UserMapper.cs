@@ -1,6 +1,8 @@
 ﻿using Back.Application;
 using Back.API.DTO;
+using Back.Application.Dtos;
 using Back.Application.Exceptions;
+using Back.Domain.Entity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using static Back.API.Routes.ApiRoutes;
@@ -20,7 +22,7 @@ public static class UserMapper
                     userDTO.FatherName, userDTO.Age, userDTO.Gender, userDTO.City, userDTO.Contact);
 
                 return Results.Created((string?)null, token);
-            });
+            }).Produces<string>(StatusCodes.Status201Created);
     }
 
     public static void MapGetLogin(ref WebApplication app)
@@ -30,29 +32,29 @@ public static class UserMapper
             var token = await uServices.Login(userDTO.Login, userDTO.Password);
 
             return Results.Ok(token);
-        });
+        }).Produces<string>(StatusCodes.Status200OK);
     }
 
     public static void MapPutUpdate(ref WebApplication app)
     {
-        app.MapPut(UserRoute + "/update", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
+        app.MapPut(UserRoute + "/update", async ([FromBody] UserUpdateDTO userDTO, [FromServices] UserServices uServices) =>
         {
-            if (userDTO.Id is null)
-                return Results.BadRequest("Id is null");
-
-            await uServices.Update(userDTO.Id!.Value, new UserUpdateDto()
+            await uServices.Update(userDTO.Id, new UserUpdateDto()
             {
                 Login = userDTO.Login,
                 Password = userDTO.Password,
                 Name = userDTO.Name,
-                Surname = userDTO.SurName,
+                Surname = userDTO.Surname,
                 FatherName = userDTO.FatherName,
                 Age = userDTO.Age,
                 Gender = userDTO.Gender,
                 City = userDTO.City,
                 Contact = userDTO.Contact,
                 //Skills = userDTO.Skills, // TODO: list of skills
-                Description = userDTO.DescribeUser
+                Description = userDTO.Description,
+                Skills = userDTO.Skills,
+                Interests = userDTO.Interests,
+                Hobbies = userDTO.Hobbies
             });
 
             return Results.Ok();
@@ -66,7 +68,7 @@ public static class UserMapper
             var user = await uServices.Me(id);
 
             return Results.Ok(user);
-        });
+        }).Produces<User>(StatusCodes.Status200OK);
     }
 
     public static void MapGetGetUser(ref WebApplication app)
@@ -76,7 +78,7 @@ public static class UserMapper
             var userBasic = await uServices.GetUser(id);
 
             return Results.Ok(userBasic);
-        });
+        }).Produces<UserBasicDto>(StatusCodes.Status200OK);
     }
 
     public static void MapPostLikeUnlike(ref WebApplication app)
@@ -107,7 +109,7 @@ public static class UserMapper
                 var list = await uServices.GetLiked(id);
 
                 return Results.Ok(list);
-            });
+            }).Produces<List<UserBasicDto>>();
     }
 
     public static void MapGetGetHasLiked(ref WebApplication app)
@@ -118,7 +120,7 @@ public static class UserMapper
                 var listHasLiked = await uServices.GetHasLiked(id);
 
                 return Results.Ok(listHasLiked);
-            });
+            }).Produces<List<UserBasicDto>>();
     }
 
     public static void MapGetGetMatches(ref WebApplication app)
@@ -129,6 +131,6 @@ public static class UserMapper
                 var listMatches = await uServices.GetMatches(id);
 
                 return Results.Ok(listMatches);
-            });
+            }).Produces<UserMatchDto>();
     }
 }
