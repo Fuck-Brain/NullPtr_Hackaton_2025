@@ -115,6 +115,12 @@ UserMapper.MapGetGetLiked(ref app);
 UserMapper.MapGetGetHasLiked(ref app);
 UserMapper.MapGetGetMatches(ref app);
 
-// R
+// Request
+RequestMapper.MapPostCreateRegister(ref app);
+RequestMapper.MapGetGetUserRequests(ref app);
+
+// ResultRequest
+ResultRequestMapper.MapGetUserResultRequestRecommendations(ref app);
+ResultRequestMapper.MapGetRequestRecommendations(ref app);
 
 app.Run();
