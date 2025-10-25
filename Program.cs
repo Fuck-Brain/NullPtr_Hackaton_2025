@@ -147,16 +147,13 @@ RequestMapper.MapGetGetUserRequests(ref app);
 ResultRequestMapper.MapGetUserResultRequestRecommendations(ref app);
 ResultRequestMapper.MapGetRequestRecommendations(ref app);
 
-<<<<<<< HEAD
 //Chat
 app.MapHub<ChatHub>("/chatHub");
-=======
 // ML
 MLMapper.MapGetGetRecommendedUsers(ref app);
 MLMapper.MapGetGetRequestsFrequencyStatistics(ref app);
 MLMapper.MapGetGetMostPopularSkills(ref app);
 MLMapper.MapGetGetMostPopularHobby(ref app);
 MLMapper.MapGetGetMostPopularInterest(ref app);
->>>>>>> 9b978fc58d000fd666920cb1ca88276d58ccdce7
 
 app.Run();
