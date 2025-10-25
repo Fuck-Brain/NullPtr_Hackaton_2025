@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -144,6 +145,15 @@ public class UserServices
 
         like = new UserLike(from, to);
         await _unit.userLikeRepository.AddAsync(like);
+    }
+
+    public async Task UnLikeUser(Guid from, Guid to)
+    {
+        var like = (await _unit.userLikeRepository.GetUserLikes(from)).FirstOrDefault(l => l.ToUserId == to && l.FromUserId == from);
+        if (like == null)
+            throw new ArgumentException("UserLike not found");
+        
+        await _unit.userLikeRepository.DeleteAsync(like.Id);
     }
 
     public async Task<List<UserBasicDto>> GetLiked(Guid id)
