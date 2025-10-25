@@ -24,7 +24,7 @@ public static class MLMapper
             }).Produces<IEnumerable<User>>();
     }
 
-    public static void GetGetRequestsFrequencyStatistics(ref WebApplication app)
+    public static void MapGetGetRequestsFrequencyStatistics(ref WebApplication app)
     {
         app.MapGet(MLRoute + "/getRequestsFrequencyStatistics",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>
@@ -36,7 +36,7 @@ public static class MLMapper
             }).Produces<Dictionary<string, int>>();
     }
 
-    public static void GetGetMostPopularSkills(ref WebApplication app)
+    public static void MapGetGetMostPopularSkills(ref WebApplication app)
     {
         app.MapGet(MLRoute + "/getMostPopularSkills",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>
@@ -48,7 +48,7 @@ public static class MLMapper
             }).Produces<Dictionary<string, int>>();
     }
 
-    public static void GetGetMostPopularHobby(ref WebApplication app)
+    public static void MapGetGetMostPopularHobby(ref WebApplication app)
     {
         app.MapGet(MLRoute + "/getMostPopularHobby",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>
@@ -60,7 +60,7 @@ public static class MLMapper
             }).Produces<Dictionary<string, int>>();
     }
 
-    public static void GetGetMostPopularInterest(ref WebApplication app)
+    public static void MapGetGetMostPopularInterest(ref WebApplication app)
     {
         app.MapGet(MLRoute + "/getMostPopularInterest",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>

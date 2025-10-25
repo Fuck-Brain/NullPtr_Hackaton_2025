@@ -14,7 +14,6 @@ using Microsoft.EntityFrameworkCore.Sqlite;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using UserMapper = Back.API.Mapping.UserMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,9 +125,9 @@ ResultRequestMapper.MapGetRequestRecommendations(ref app);
 
 // ML
 MLMapper.MapGetGetRecommendedUsers(ref app);
-MLMapper.GetGetRequestsFrequencyStatistics(ref app);
-MLMapper.GetGetMostPopularSkills(ref app);
-MLMapper.GetGetMostPopularHobby(ref app);
-MLMapper.GetGetMostPopularInterest(ref app);    
+MLMapper.MapGetGetRequestsFrequencyStatistics(ref app);
+MLMapper.MapGetGetMostPopularSkills(ref app);
+MLMapper.MapGetGetMostPopularHobby(ref app);
+MLMapper.MapGetGetMostPopularInterest(ref app);
 
 app.Run();
