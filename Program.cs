@@ -55,6 +55,7 @@ builder.Services.AddScoped<IUserLikeRepository, UserLikeRepositorySqlLite>();
 builder.Services.AddScoped<IUserHobbyRepository, UserHobbyRepositorySqlLite>();
 builder.Services.AddScoped<IUserInterestRepository, UserInterestRepositorySqlLite>();
 builder.Services.AddScoped<IUserSkillRepository, UserSkillRepositorySqlLite>();
+builder.Services.AddScoped<IChatRepository, ChatRepositorySqlLite>();
 builder.Services.AddScoped<UnitOfWork>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
