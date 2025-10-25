@@ -35,12 +35,10 @@ namespace Back.Infrastructure.MLClient
 
             var payload = new
             {
-                Id = request.Id,
                 UserId = request.UserId,
                 NameRequest = request.NameRequest,
                 TextRequest = request.TextRequest,
-                Label = request.Label,
-                IsSended = request.IsSended
+                Label = request.Label
             };
 
             var json = JsonSerializer.Serialize(payload);
@@ -50,12 +48,13 @@ namespace Back.Infrastructure.MLClient
             response.EnsureSuccessStatusCode();
 
             var responseJson = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<MLResultResponse>(responseJson);
 
-            // обновляем данные в БД
-            if (result != null)
+            // сервер возвращает просто строку, а не объект
+            var label = responseJson.Trim('"');
+
+            if (!string.IsNullOrWhiteSpace(label))
             {
-                request.SetLabel(result.Label);
+                request.SetLabel(label);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -71,15 +70,15 @@ namespace Back.Infrastructure.MLClient
         {
             var request = await _context.Requests.FindAsync(requestId);
             var allResuest = await _context.Requests.ToListAsync();
-            User currentUser = await _context.Users.Include(x => x.Hobbies).
-                Include(x => x.Interests).
-                Include(x => x.Skills).
-                FirstOrDefaultAsync(x => x.Id == userId);
-            var allUsers = await _context.Users.Include(x => x.Hobbies).
-                Include(x => x.Interests).
-                Include(x => x.Skills).
-                Where(x => x.Id != userId).
-                ToListAsync();
+            User currentUser = await _context.Users.Include(x => x.Hobbies)
+                .Include(x => x.Interests)
+                .Include(x => x.Skills)
+                .FirstOrDefaultAsync(x => x.Id == userId);
+            var allUsers = await _context.Users.Include(x => x.Hobbies)
+                .Include(x => x.Interests)
+                .Include(x => x.Skills)
+                .Where(x => x.Id != userId)
+                .ToListAsync();
 
             if (request == null)
                 return Enumerable.Empty<User>();
@@ -88,45 +87,26 @@ namespace Back.Infrastructure.MLClient
             {
                 Request = new
                 {
-                    Id =  request.Id,
                     UserId = request.UserId,
-                    User = new
-                    {
-                        Id = currentUser.Id,
-                        DescribeUser = currentUser.DescribeUser,
-                        Skills = string.Join(", ", currentUser.Skills.Select(s => s.SkillName)),
-                        Interests = string.Join(", ", currentUser.Interests.Select(s => s.InterestName)),
-                        Hobbies = string.Join(", ", currentUser.Hobbies.Select(s => s.HobbyName))
-                    },
                     NameRequest = request.NameRequest,
-                    TextRequest = request.TextRequest,  
-                    Label = request.Label,
-                    IsSended = request.IsSended
+                    TextRequest = request.TextRequest,
+                    Label = request.Label
                 },
                 Users = allUsers.Select(u => new
                 {
                     Id = u.Id,
-                    Name = u.Name,
-                    SurName = u.SurName,
-                    FatherName = u.FatherName,
-                    Age = u.Age,
-                    City = u.City,
-                    Gender = u.Gender,
-                    Describe = u.DescribeUser,
-                    Description = u.DescribeUser,
-                    UserSkills = string.Join(", ", u.Skills.Select(s => s.SkillName)),
-                    UserHobbies = string.Join(", ", u.Hobbies.Select(s => s.HobbyName)),
-                    UserInterest = string.Join(", ", u.Interests.Select(s => s.InterestName))
+                    DescribeUser = u.DescribeUser,
+                    Skills = string.Join(", ", u.Skills.Select(s => s.SkillName)),
+                    Interests = string.Join(", ", u.Interests.Select(s => s.InterestName)),
+                    Hobbies = string.Join(", ", u.Hobbies.Select(s => s.HobbyName))
                 }).ToList(),
                 Requests = allResuest.Select(r => new
                 {
-                    Id = r.Id,
                     UserId = r.UserId,
                     NameRequest = r.NameRequest,
                     TextRequest = r.TextRequest,
-                    Label = r.Label,
-                    IsSended = r.IsSended
-                })
+                    Label = r.Label
+                }).ToList()
             };
 
             var json = JsonSerializer.Serialize(payload);
@@ -136,18 +116,16 @@ namespace Back.Infrastructure.MLClient
             response.EnsureSuccessStatusCode();
 
             var responseJson = await response.Content.ReadAsStringAsync();
-            var result = JsonSerializer.Deserialize<List<Guid>>(responseJson);
+            var result = JsonSerializer.Deserialize<Dictionary<Guid, double>>(responseJson);
 
             if (result == null || result.Count == 0)
                 return Enumerable.Empty<User>();
 
-            // Возвращаем пользователей, которых рекомендовал ML
-            return allUsers.Where(u => result.Contains(u.Id)).ToList();
+            return allUsers.Where(u => result.ContainsKey(u.Id)).ToList();
         }
 
         public async Task<Dictionary<string, int>> GetRequestsFrequencyStatisticsAsync(FilterOptions? filter = null)
         {
-            // 1️⃣ Получаем пользователей с учётом фильтров
             var query = _context.Users.AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(filter?.City))
@@ -162,33 +140,34 @@ namespace Back.Infrastructure.MLClient
             if (filter?.MaxAge != null)
                 query = query.Where(u => u.Age <= filter.MaxAge);
 
-            // 2️⃣ Получаем Id нужных пользователей
             var filteredUserIds = await query.Select(u => u.Id).ToListAsync();
 
-            // 3️⃣ Выбираем только скиллы этих пользователей
             List<string> allSkills = await _context.UserSkills
                 .Where(s => filteredUserIds.Contains(s.UserId))
                 .Select(s => s.SkillName)
                 .Distinct()
                 .ToListAsync();
 
-            // 4️⃣ Получаем все запросы (можно тоже фильтровать по пользователям, если нужно)
             var allRequests = await _context.Requests
                 .Where(r => filteredUserIds.Contains(r.UserId))
-                .Select(r => new { r.Id, r.UserId, r.NameRequest, r.TextRequest, r.Label })
+                .Select(r => new
+                {
+                    UserId = r.UserId,
+                    NameRequest = r.NameRequest,
+                    TextRequest = r.TextRequest,
+                    Label = r.Label
+                })
                 .ToListAsync();
 
-            // 5️⃣ Формируем payload
             var payload = new
             {
-                Skills = string.Join(", ", allSkills),
+                Skills = allSkills, // исправлено: теперь это список, а не строка
                 Requests = allRequests
             };
 
             var json = JsonSerializer.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // 6️⃣ Отправляем на ML
             var response = await _httpClient.PostAsync("statistic/requests_frequency", content);
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"ML server returned {response.StatusCode} for requests_frequency");
@@ -199,15 +178,13 @@ namespace Back.Infrastructure.MLClient
             return result ?? new Dictionary<string, int>();
         }
 
-
-
         public async Task<Dictionary<string, int>> GetMostPopularSkillsAsync(FilterOptions? filter = null)
         {
-            var users =  _context.Users
+            var users = _context.Users
                 .Include(u => u.Skills)
                 .AsQueryable();
 
-            if(filter != null)
+            if (filter != null)
             {
                 if (!string.IsNullOrWhiteSpace(filter?.City))
                     users = users.Where(u => u.City.ToLower() == filter.City.ToLower());
@@ -224,25 +201,19 @@ namespace Back.Infrastructure.MLClient
 
             var filteredUserIds = await users.ToListAsync();
 
-            // 🔹 Готовим массив строк
             var userProfiles = filteredUserIds.Select(u =>
-                string.Join(", ",
-                    u.Skills.Select(s => s.SkillName)
-                )
+                string.Join(", ", u.Skills.Select(s => s.SkillName))
             ).ToArray();
 
-            var payload = new { Profiles = userProfiles };
-            var json = JsonSerializer.Serialize(payload);
+            // исправлено: отправляем массив, а не объект
+            var json = JsonSerializer.Serialize(userProfiles);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // 🔹 Отправляем на FastAPI /statistic/most_popular
             var response = await _httpClient.PostAsync("statistic/most_popular", content);
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"ML server returned {response.StatusCode} for most_popular");
 
             var responseJson = await response.Content.ReadAsStringAsync();
-
-            // 🔹 FastAPI должен вернуть словарь вида {"Python": 12, "C#": 8, "Figma": 5}
             var result = JsonSerializer.Deserialize<Dictionary<string, int>>(responseJson);
 
             return result ?? new Dictionary<string, int>();
@@ -271,25 +242,18 @@ namespace Back.Infrastructure.MLClient
 
             var filteredUserIds = await users.ToListAsync();
 
-            // 🔹 Готовим массив строк
             var userProfiles = filteredUserIds.Select(u =>
-                string.Join(", ",
-                    u.Hobbies.Select(s => s.HobbyName)
-                )
+                string.Join(", ", u.Hobbies.Select(s => s.HobbyName))
             ).ToArray();
 
-            var payload = new { Profiles = userProfiles };
-            var json = JsonSerializer.Serialize(payload);
+            var json = JsonSerializer.Serialize(userProfiles);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // 🔹 Отправляем на FastAPI /statistic/most_popular
             var response = await _httpClient.PostAsync("statistic/most_popular", content);
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"ML server returned {response.StatusCode} for most_popular");
 
             var responseJson = await response.Content.ReadAsStringAsync();
-
-            // 🔹 FastAPI должен вернуть словарь вида {"Python": 12, "C#": 8, "Figma": 5}
             var result = JsonSerializer.Deserialize<Dictionary<string, int>>(responseJson);
 
             return result ?? new Dictionary<string, int>();
@@ -318,31 +282,21 @@ namespace Back.Infrastructure.MLClient
 
             var filteredUserIds = await users.ToListAsync();
 
-            // 🔹 Готовим массив строк
             var userProfiles = filteredUserIds.Select(u =>
-                string.Join(", ",
-                    u.Interests.Select(s => s.InterestName)
-                )
+                string.Join(", ", u.Interests.Select(s => s.InterestName))
             ).ToArray();
 
-            var payload = new { Profiles = userProfiles };
-            var json = JsonSerializer.Serialize(payload);
+            var json = JsonSerializer.Serialize(userProfiles);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-            // 🔹 Отправляем на FastAPI /statistic/most_popular
             var response = await _httpClient.PostAsync("statistic/most_popular", content);
             if (!response.IsSuccessStatusCode)
                 throw new Exception($"ML server returned {response.StatusCode} for most_popular");
 
             var responseJson = await response.Content.ReadAsStringAsync();
-
-            // 🔹 FastAPI должен вернуть словарь вида {"Python": 12, "C#": 8, "Figma": 5}
             var result = JsonSerializer.Deserialize<Dictionary<string, int>>(responseJson);
 
             return result ?? new Dictionary<string, int>();
         }
-
-
-
     }
 }
