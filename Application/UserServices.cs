@@ -103,6 +103,38 @@ public class UserServices
         await _userRepository.UpdateUser(user);
     }
 
+    public async Task<User> Me(Guid id) // only for authorized users!!
+    {
+        var user = await _userRepository.GetUser(id);
+        
+        if (user == null)
+            throw new AuthException();
+        return user;
+    }
+
+    public async Task<UserBasicDto> GetUser(Guid id) // for getting other users 
+    {
+       var usr =  await _userRepository.GetUser(id);
+       
+       return new UserBasicDto()
+       {
+           Age = usr.Age,
+           Gender = usr.Gender,
+           City = usr.City,
+           DescribeUser = usr.DescribeUser,
+           Name = usr.Name,
+           FatherName = usr.FatherName,
+           Hobbies = usr.Hobbies,
+           Login = usr.Login,
+           Id = usr.Id,
+           Interests = usr.Interests,
+           PhotoHash = usr.PhotoHash,
+           Skills = usr.Skills,
+           SurName = usr.SurName
+       };
+
+    }
+
     public async Task LikeUser(Guid from, Guid to)
     {
         var like = (await _unit.userLikeRepository.GetUserLikes(from)).FirstOrDefault(l => l.ToUserId == to);
