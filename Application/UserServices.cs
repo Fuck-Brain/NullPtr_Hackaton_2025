@@ -28,7 +28,7 @@ public class UserServices
     {
         var user = (await _userRepository.GetAllUser()).FirstOrDefault(u => u.Login == login);
         if (user == null)
-            throw new AuthException();
+            throw new Exception();
         string passwordHash;
         using (var sha = new System.Security.Cryptography.SHA256Managed())
         {
@@ -38,7 +38,7 @@ public class UserServices
         }
 
         if (user.HashPassword != passwordHash)
-            throw new AuthException();
+            throw new NullReferenceException();
 
         return _jwtTokenService.GenerateToken(user.Login);
     }
