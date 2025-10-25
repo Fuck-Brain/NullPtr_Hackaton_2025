@@ -19,6 +19,11 @@ public class ErrorHandlingMiddleware
         {
             await _next(context); // передаём управление дальше по конвейеру
         }
+        catch (TaskCanceledException)
+        {
+            // Просто игнорируем отмененные задачи (например, прерванный запрос Swagger UI)
+            context.Response.StatusCode = StatusCodes.Status499ClientClosedRequest;
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unhandled exception: {Message}", ex.Message);
