@@ -1,30 +1,31 @@
 ﻿using Back.Application;
 using Back.API.DTO;
 using Back.Application.Exceptions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using static Back.API.Routes.ApiRoutes;
 
 namespace Back.API.Mapping;
 
 public static class UserMapper
 {
-    private const string Prefix = "/api/user";
-
     public static void MapPostRegister(ref WebApplication app)
     {
-        app.MapPost(Prefix + "/register", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
-        {
-            var token = await uServices.Register(userDTO.Login, userDTO.Password, userDTO.PhotoHash,
-                userDTO.Name,
-                userDTO.SurName,
-                userDTO.FatherName, userDTO.Age, userDTO.Gender, userDTO.City, userDTO.Contact);
+        app.MapPost(UserRoute + "/register",
+            async ([FromBody] UserRegisterDTO userDTO, [FromServices] UserServices uServices) =>
+            {
+                var token = await uServices.Register(userDTO.Login, userDTO.Password, userDTO.PhotoHash,
+                    userDTO.Name,
+                    userDTO.SurName,
+                    userDTO.FatherName, userDTO.Age, userDTO.Gender, userDTO.City, userDTO.Contact);
 
-            return Results.Created((string?)null, token);
-        });
+                return Results.Created((string?)null, token);
+            });
     }
 
     public static void MapGetLogin(ref WebApplication app)
     {
-        app.MapGet(Prefix + "/login", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
+        app.MapGet(UserRoute + "/login", async ([FromBody] UserLoginDto userDTO, [FromServices] UserServices uServices) =>
         {
             var token = await uServices.Login(userDTO.Login, userDTO.Password);
 
@@ -34,7 +35,7 @@ public static class UserMapper
 
     public static void MapPutUpdate(ref WebApplication app)
     {
-        app.MapPut(Prefix + "/update", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
+        app.MapPut(UserRoute + "/update", async ([FromBody] UserDTO userDTO, [FromServices] UserServices uServices) =>
         {
             if (userDTO.Id is null)
                 return Results.BadRequest("Id is null");
@@ -55,12 +56,12 @@ public static class UserMapper
             });
 
             return Results.Ok();
-        });
+        }).RequireAuthorization();
     }
 
     public static void MapGetMe(ref WebApplication app)
     {
-        app.MapGet(Prefix + "{id:guid}/me", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
+        app.MapGet(UserRoute + "{id:guid}/me", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
         {
             var user = await uServices.Me(id);
 
@@ -70,7 +71,7 @@ public static class UserMapper
 
     public static void MapGetGetUser(ref WebApplication app)
     {
-        app.MapGet(Prefix + "{id:guid}", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
+        app.MapGet(UserRoute + "{id:guid}", async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
         {
             var userBasic = await uServices.GetUser(id);
 
@@ -80,27 +81,27 @@ public static class UserMapper
 
     public static void MapPostLikeUnlike(ref WebApplication app)
     {
-        app.MapPost("/{id:guid}/like",
+        app.MapPost(UserRoute + "/{id:guid}/like",
             async ([FromRoute] Guid id, [FromBody] Guid idUserFrom, [FromServices] UserServices uServices) =>
             {
                 await uServices.LikeUser(idUserFrom, id);
 
                 return Results.Ok();
             }
-        );
+        ).RequireAuthorization();
 
-        app.MapPost("/{id:guid}/unlike",
+        app.MapPost(UserRoute + "/{id:guid}/unlike",
             async ([FromRoute] Guid id, [FromBody] Guid idUserFrom, [FromServices] UserServices uServices) =>
             {
                 await uServices.UnLikeUser(idUserFrom, id);
 
                 return Results.Ok();
-            });
+            }).RequireAuthorization();
     }
 
     public static void MapGetGetLiked(ref WebApplication app)
     {
-        app.MapPost("/{id:guid}/getLiked",
+        app.MapPost(UserRoute + "/{id:guid}/getLiked",
             async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
             {
                 var list = await uServices.GetLiked(id);
@@ -111,7 +112,7 @@ public static class UserMapper
 
     public static void MapGetGetHasLiked(ref WebApplication app)
     {
-        app.MapGet("{id:guid}/hasLiked",
+        app.MapGet(UserRoute + "{id:guid}/hasLiked",
             async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
             {
                 var listHasLiked = await uServices.GetHasLiked(id);
@@ -122,11 +123,11 @@ public static class UserMapper
 
     public static void MapGetGetMatches(ref WebApplication app)
     {
-        app.MapGet("{id:guid}/getMatches",
+        app.MapGet(UserRoute + "{id:guid}/getMatches",
             async ([FromRoute] Guid id, [FromServices] UserServices uServices) =>
             {
                 var listMatches = await uServices.GetMatches(id);
-                
+
                 return Results.Ok(listMatches);
             });
     }
