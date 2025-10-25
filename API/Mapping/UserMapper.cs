@@ -22,7 +22,7 @@ public static class UserMapper
                     userDTO.FatherName, userDTO.Age, userDTO.Gender, userDTO.City, userDTO.Contact);
 
                 return Results.Created((string?)null, token);
-            }).Produces<string>(StatusCodes.Status201Created);
+            }).Produces<AuthResponseDto>(StatusCodes.Status201Created);
     }
 
     public static void MapGetLogin(ref WebApplication app)
@@ -32,7 +32,7 @@ public static class UserMapper
             var token = await uServices.Login(userDTO.Login, userDTO.Password);
 
             return Results.Ok(token);
-        }).Produces<string>(StatusCodes.Status200OK);
+        }).Produces<AuthResponseDto>(StatusCodes.Status200OK);
     }
 
     public static void MapPutUpdate(ref WebApplication app)

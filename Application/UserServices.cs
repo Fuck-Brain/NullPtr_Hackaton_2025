@@ -3,6 +3,7 @@ using System.Runtime.ExceptionServices;
 using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
+using Back.API.DTO;
 using Back.Application.Auth;
 using Back.Application.Dtos;
 using Back.Application.Exceptions;
@@ -24,7 +25,7 @@ public class UserServices
         _jwtTokenService = jwtTokenService;
     }
 
-    public async Task<string> Login(string login, string password)
+    public async Task<AuthResponseDto> Login(string login, string password)
     {
         var user = (await _userRepository.GetAllUser()).FirstOrDefault(u => u.Login == login);
         if (user == null)
@@ -40,10 +41,13 @@ public class UserServices
         if (user.HashPassword != passwordHash)
             throw new AuthException();
 
-        return _jwtTokenService.GenerateToken(user.Login);
+        return new AuthResponseDto() { 
+            UserId = user.Id,
+            Token = _jwtTokenService.GenerateToken(user.Login)
+        };
     }
 
-    public async Task<string> Register(string login, string password, string photoHash, string name, string surName, string fatherName, int age, string gender, string city, string contact)
+    public async Task<AuthResponseDto> Register(string login, string password, string photoHash, string name, string surName, string fatherName, int age, string gender, string city, string contact)
     {
         if ((await _userRepository.GetAllUser()).Any(u => u.Login == login))
             throw new AuthException();
@@ -58,7 +62,10 @@ public class UserServices
 
         var user = new User(login, passwordHash, photoHash, name, surName, fatherName, age, gender, city, contact);
         await _userRepository.AddUser(user);
-        return _jwtTokenService.GenerateToken(user.Login);
+        return new AuthResponseDto() { 
+            UserId = user.Id,
+            Token = _jwtTokenService.GenerateToken(user.Login)
+        };
     }
 
     public async Task Update(Guid id, UserUpdateDto info)
