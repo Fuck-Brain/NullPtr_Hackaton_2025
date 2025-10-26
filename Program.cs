@@ -64,6 +64,7 @@ builder.Services.AddSingleton<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<AnalyticsClient>();
 builder.Services.AddScoped<RequestServices>();
 builder.Services.AddScoped<UserServices>();
+builder.Services.AddScoped<ResultRequestServices>();
 
 var mlServerUrl = builder.Configuration["MLServer:BaseUrl"];
 
