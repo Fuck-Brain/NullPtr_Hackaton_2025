@@ -148,8 +148,8 @@ RequestMapper.MapPostCreateRegister(ref app);
 RequestMapper.MapGetGetUserRequests(ref app);
 
 // ResultRequest
-ResultRequestMapper.MapGetUserResultRequestRecommendations(ref app);
-ResultRequestMapper.MapGetRequestRecommendations(ref app);
+// ResultRequestMapper.MapGetUserResultRequestRecommendations(ref app);
+// ResultRequestMapper.MapGetRequestRecommendations(ref app);
 
 //Chat
 app.MapHub<ChatHub>("/chatHub");
