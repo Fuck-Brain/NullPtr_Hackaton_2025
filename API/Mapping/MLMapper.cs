@@ -18,7 +18,23 @@ public static class MLMapper
         app.MapPost(MLRoute + "/getRecommendedUsers",
             async ([FromBody] UserRequestDTO urDTO, [FromServices] MLClient ml) =>
             {
-                var listUser = await ml.GetRecommendedUsersAsync(urDTO.requestId, urDTO.userId);
+                var listUser = (await ml.GetRecommendedUsersAsync(urDTO.requestId, urDTO.userId)).Select(user => new UserDetailsDto
+                {
+                    Id = user.Id,
+                    Login = user.Login,
+                    PhotoHash = user.PhotoHash,
+                    Name = user.Name,
+                    SurName = user.SurName,
+                    FatherName = user.FatherName,
+                    Age = user.Age,
+                    Gender = user.Gender,
+                    DescribeUser = user.DescribeUser,
+                    City = user.City,
+                    Contact = user.Contact,
+                    Skills = user.Skills.Select(s => s.SkillName).ToList(),
+                    Hobbies = user.Hobbies.Select(s => s.HobbyName).ToList(),
+                    Interests = user.Interests.Select(s => s.InterestName).ToList(),
+                });
 
                 return Results.Ok(listUser);
             }).Produces<IEnumerable<User>>();
