@@ -98,6 +98,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSignalR();
 
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -120,6 +121,7 @@ using (var scope = app.Services.CreateScope())
     await DbInitializer.EnsureCreatedAndSeedAsync(db, seedEnabled);
 }
 
+app.UseRouting();
 app.UseCors("AllowAll");
 app.UseSwagger();
 app.UseSwaggerUI();
