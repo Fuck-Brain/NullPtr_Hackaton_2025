@@ -29,8 +29,8 @@ public class RequestServices
             throw new AuthException();
         
         var request = new Request(userId,  name, text);
-        user.Requests.Add(request);
-        await _userRepository.UpdateUser(user);
+
+        await _requestRepository.AddRequest(request);
         await _client.ProcessRequestAsync(request.Id);
         return request.Id;
     }
