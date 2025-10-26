@@ -58,7 +58,7 @@ namespace Back.Infrastructure.MLClient // ← единый неймспейс
         public async Task<IEnumerable<User>> GetRecommendedUsersAsync(Guid requestId, Guid userId, CancellationToken ct = default)
         {
             var request = await _context.Requests.FirstOrDefaultAsync(r => r.Id == requestId, ct);
-            var allRequests = await _context.Requests.Where(x =>x.UserId != userId).ToListAsync();
+            var allRequests = await _context.Requests.ToListAsync();
             User currentUser = await _context.Users.Include(x => x.Hobbies)
                 .Include(x => x.Interests)
                 .Include(x => x.Skills)
@@ -66,7 +66,6 @@ namespace Back.Infrastructure.MLClient // ← единый неймспейс
             var allUsers = await _context.Users.Include(x => x.Hobbies)
                 .Include(x => x.Interests)
                 .Include(x => x.Skills)
-                .Where(x => x.Id != userId)
                 .ToListAsync(ct);
 
             if (request == null) return Enumerable.Empty<User>();
