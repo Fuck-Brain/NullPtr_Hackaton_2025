@@ -15,7 +15,7 @@ public static class MLMapper
 {
     public static void MapGetGetRecommendedUsers(ref WebApplication app)
     {
-        app.MapGet(MLRoute + "/getRecommendedUsers",
+        app.MapPost(MLRoute + "/getRecommendedUsers",
             async ([FromBody] UserRequestDTO urDTO, [FromServices] MLClient ml) =>
             {
                 var listUser = await ml.GetRecommendedUsersAsync(urDTO.requestId, urDTO.userId);
@@ -26,7 +26,7 @@ public static class MLMapper
 
     public static void MapGetGetRequestsFrequencyStatistics(ref WebApplication app)
     {
-        app.MapGet(MLRoute + "/getRequestsFrequencyStatistics",
+        app.MapPost(MLRoute + "/getRequestsFrequencyStatistics",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>
             {
                 var frequencyStatDict = await ml.GetRequestsFrequencyStatisticsAsync(fOp);
@@ -38,7 +38,7 @@ public static class MLMapper
 
     public static void MapGetGetMostPopularSkills(ref WebApplication app)
     {
-        app.MapGet(MLRoute + "/getMostPopularSkills",
+        app.MapPost(MLRoute + "/getMostPopularSkills",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>
             {
                 var mostPopularSkills = await ml.GetMostPopularSkillsAsync(fOp);
@@ -50,7 +50,7 @@ public static class MLMapper
 
     public static void MapGetGetMostPopularHobby(ref WebApplication app)
     {
-        app.MapGet(MLRoute + "/getMostPopularHobby",
+        app.MapPost(MLRoute + "/getMostPopularHobby",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>
             {
                 var mostPopularHobby = await ml.GetMostPopularHobbyAsync(fOp);
@@ -62,7 +62,7 @@ public static class MLMapper
 
     public static void MapGetGetMostPopularInterest(ref WebApplication app)
     {
-        app.MapGet(MLRoute + "/getMostPopularInterest",
+        app.MapPost(MLRoute + "/getMostPopularInterest",
             async ([FromBody] FilterOptions fOp, [FromServices] MLClient ml) =>
             {
                 var mostPopularInterest = await ml.GetMostPopularInterestAsync(fOp);
