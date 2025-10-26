@@ -29,14 +29,19 @@ public class RequestServices
             throw new AuthException();
         
         var request = new Request(userId,  name, text);
-        user.Requests.Add(request);
-        await _userRepository.UpdateUser(user);
+
+        await _requestRepository.AddRequest(request);
         await _client.ProcessRequestAsync(request.Id);
         return request.Id;
     }
     
-    public async Task<List<Request>> GetUserRequests(Guid userId)
+    public async Task<List<RequestDto>> GetUserRequests(Guid userId)
     {
-        return (await _requestRepository.GetAllRequests()).Where(x => x.UserId == userId).ToList();
+        return (await _requestRepository.GetAllRequests()).Where(x => x.UserId == userId).Select(r => new RequestDto()
+        {
+            Id = r.Id,
+            Name = r.NameRequest,
+            Text = r.TextRequest
+        }).ToList();
     }
 }
