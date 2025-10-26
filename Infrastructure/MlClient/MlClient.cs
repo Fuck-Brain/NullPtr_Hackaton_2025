@@ -69,7 +69,7 @@ namespace Back.Infrastructure.MLClient
         public async Task<IEnumerable<User>> GetRecommendedUsersAsync(Guid requestId, Guid userId)
         {
             var request = await _context.Requests.FindAsync(requestId);
-            var allResuest = await _context.Requests.ToListAsync();
+            var allResuest = await _context.Requests.Where(x =>x.UserId != userId).ToListAsync();
             User currentUser = await _context.Users.Include(x => x.Hobbies)
                 .Include(x => x.Interests)
                 .Include(x => x.Skills)
